@@ -65,7 +65,7 @@ public class ClientDAO extends BaseDAO implements InterClientDAO<Client> {
 	}
 
 	@Override
-	public void deleteById(int id) {
+	public void deleteById(Integer id) {
 		String SQL = "delete from tb_client where id = ?";
 		PreparedStatement pstm;
 		try {
@@ -80,22 +80,34 @@ public class ClientDAO extends BaseDAO implements InterClientDAO<Client> {
 	}
 
 	@Override
-	public ResultSet findById(int id) {
-		String SQL = "select * from tb_client where id=?";
-		PreparedStatement pstm;
+	public Client findById(Integer id) {
+		String SQL = "SELECT * FROM tb_client WHERE id = ?";
+
+		PreparedStatement pst = null;
 		ResultSet rs = null;
-				
- 		try {
-			pstm = getConnection().prepareStatement(SQL);
-			pstm.setInt(1, id);
-			System.out.println(pstm);
-			rs = pstm.executeQuery();
-			
+		try {
+
+			pst = getConnection().prepareStatement(SQL);
+
+			pst.setInt(1, id);
+
+			rs = pst.executeQuery();
+			if (rs.next()) {
+				Client obj = new Client();
+				obj.setId(rs.getInt("id"));
+				obj.setName(rs.getString("name"));
+				obj.setCpf(rs.getString("cpf"));
+				obj.setPhone(rs.getString("phone"));
+				obj.setAddress(rs.getString("address"));
+				return obj;
+			}
+			return null;
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new DbException(e.getMessage());
+		} finally {
+			DB.closeStatement(pst);
+			DB.closeResultSet(rs);
 		}
-		return rs;
 	}
 
 //	@Override

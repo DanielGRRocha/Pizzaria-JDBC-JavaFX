@@ -16,6 +16,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.VBox;
+import model.bo.AdditionalBO;
 import model.bo.ClientBO;
 import model.bo.InventoryBO;
 
@@ -27,6 +28,9 @@ public class MainViewController implements Initializable {
 	
 	@FXML
 	private MenuItem menuItemInventory;
+	
+	@FXML
+	private MenuItem menuItemAdditional;
 	
 	
 	@FXML
@@ -41,6 +45,14 @@ public class MainViewController implements Initializable {
 	public void onMenuItemInventoryAction() {
 		loadView("/gui/InventoryList.fxml", (InventoryListController controller) -> {
 			controller.setInventoryBO(new InventoryBO());
+			controller.updateTableView();
+		});
+	}
+	
+	@FXML
+	public void onMenuItemAdditionalAction() {
+		loadView("/gui/AdditionalList.fxml", (AdditionalListController controller) -> {
+			controller.setAdditionalBO(new AdditionalBO());
 			controller.updateTableView();
 		});
 	}

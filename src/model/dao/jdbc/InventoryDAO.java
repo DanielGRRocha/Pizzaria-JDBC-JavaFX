@@ -62,7 +62,7 @@ public class InventoryDAO extends BaseDAO implements InterDAO<Inventory> {
 	}
 
 	@Override
-	public void deleteById(int id) {
+	public void deleteById(Integer id) {
 		String SQL = "delete from tb_inventory where id = ?";
 		PreparedStatement pstm;
 		try {
@@ -77,22 +77,32 @@ public class InventoryDAO extends BaseDAO implements InterDAO<Inventory> {
 	}
 
 	@Override
-	public ResultSet findById(int id) {
-		String SQL = "select * from tb_inventory where id=?";
-		PreparedStatement pstm;
+	public Inventory findById(Integer id) {
+		String SQL = "SELECT * FROM tb_inventory WHERE id = ?";
+
+		PreparedStatement pst = null;
 		ResultSet rs = null;
-				
- 		try {
-			pstm = getConnection().prepareStatement(SQL);
-			pstm.setInt(1, id);
-			System.out.println(pstm);
-			rs = pstm.executeQuery();
-			
+		try {
+
+			pst = getConnection().prepareStatement(SQL);
+
+			pst.setInt(1, id);
+
+			rs = pst.executeQuery();
+			if (rs.next()) {
+				Inventory obj = new Inventory();
+				obj.setId(rs.getInt("id"));
+				obj.setName(rs.getString("name"));
+				obj.setQuantity(rs.getInt("quantity"));
+				return obj;
+			}
+			return null;
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			throw new DbException(e.getMessage());
+		} finally {
+			DB.closeStatement(pst);
+			DB.closeResultSet(rs);
 		}
-		return rs;
 	}
 
 	@Override

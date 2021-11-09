@@ -3,6 +3,7 @@ package gui;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -19,17 +20,18 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import model.bo.InventoryBO;
+import model.bo.AdditionalBO;
 import model.exceptions.ValidationException;
-import model.vo.Inventory;
+import model.vo.Additional;
 
 
 
-public class InventoryFormController implements Initializable {//classe Sujeito (emite o evento), instancia a interface DataChangeListener
+
+public class AdditionalFormController implements Initializable {//classe Sujeito (emite o evento), instancia a interface DataChangeListener
 	
 	//criar a dependência (ak instanciar criando um set)
-	private Inventory entity;
-	private InventoryBO service;
+	private Additional entity;
+	private AdditionalBO service;
 	//a classe em questão vai guardar uma lista de objetos interessados em receber o evento (criar método para adicioná-los na lista)
 	private List<InterDataChangeListener> dataChangeListeners = new ArrayList<>(); 
 	
@@ -42,14 +44,14 @@ public class InventoryFormController implements Initializable {//classe Sujeito 
 	private TextField textFieldName;
 	
 	@FXML
-	private TextField textFieldQuantity;
+	private TextField textFieldPrice;
 
 	
 	@FXML
 	private Label labelErrorName;
 	
 	@FXML
-	private Label labelErrorQuantity;
+	private Label labelErrorPrice;
 	
 	
 	@FXML
@@ -59,11 +61,11 @@ public class InventoryFormController implements Initializable {//classe Sujeito 
 	private Button btCancel;
 	
 	//set Inventory (agora controlador tem instância do Inventory)
-	public void setInventory(Inventory entity) {
+	public void setAdditional(Additional entity) {
 		this.entity = entity;
 	}
 	//set InventoryBO (agora controlador tem instância da classe de serviços do Inventory)
-	public void setService(InventoryBO service) {
+	public void setService(AdditionalBO service) {
 		this.service = service;
 	}
 	//método para adicionar objetos na lista "dataChangeListeners"
@@ -99,8 +101,8 @@ public class InventoryFormController implements Initializable {//classe Sujeito 
 	}
 	
 	
-	private Inventory getFormData() {//pegar os dados do formulario
-		Inventory obj = new Inventory();
+	private Additional getFormData() {//pegar os dados do formulario
+		Additional obj = new Additional();
 		
 		ValidationException exception = new ValidationException("Validation error");
 		
@@ -113,11 +115,11 @@ public class InventoryFormController implements Initializable {//classe Sujeito 
 		}
 		obj.setName(textFieldName.getText());
 		
-		//quantity
-		if(textFieldQuantity.getText() == null || textFieldQuantity.getText().trim().equals("")) {
-			exception.addError("quantity", "Field can't be empty");
+		//price
+		if(textFieldPrice.getText() == null || textFieldPrice.getText().trim().equals("")) {
+			exception.addError("price", "Field can't be empty");
 		}
-		obj.setQuantity(Utils.tryParseToInt(textFieldQuantity.getText()));
+		obj.setPrice(Utils.tryParseToDouble(textFieldPrice.getText()));
 		
 		//erros
 		if(exception.getErrors().size() > 0) {
@@ -152,7 +154,7 @@ public class InventoryFormController implements Initializable {//classe Sujeito 
 	private void initializeNodes() {
 		Constraints.setTextFieldInteger(textFieldId);
 		Constraints.setTextFieldMaxLength(textFieldName, 60);
-		Constraints.setTextFieldInteger(textFieldQuantity);
+		Constraints.setTextFieldDouble(textFieldPrice);
 		
 	}
 	
@@ -165,7 +167,8 @@ public class InventoryFormController implements Initializable {//classe Sujeito 
 		
 		textFieldId.setText(String.valueOf(entity.getId())); //converte Interger em String
 		textFieldName.setText(entity.getName());
-		textFieldQuantity.setText(String.valueOf(entity.getQuantity()));
+		Locale.setDefault(Locale.US);
+		textFieldPrice.setText(String.format("%.2f", entity.getPrice()));
 		
 		
 	}
@@ -175,7 +178,7 @@ public class InventoryFormController implements Initializable {//classe Sujeito 
 		Set<String> fields = errors.keySet();
 		
 		labelErrorName.setText((fields.contains("name") ? errors.get("name") : ""));
-		labelErrorQuantity.setText((fields.contains("quantity") ? errors.get("quantity") : ""));
+		labelErrorPrice.setText((fields.contains("price") ? errors.get("price") : ""));
 		
 	}
 	
