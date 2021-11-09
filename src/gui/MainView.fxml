@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.VBox?>
+
+<ScrollPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="633.0" prefWidth="830.0" style="-fx-background-color: FFE5D7;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.MainViewController">
+   <content>
+      <VBox prefHeight="265.0" prefWidth="377.0" style="-fx-background-color: FFE5D7;">
+         <children>
+            <MenuBar>
+              <menus>
+                <Menu mnemonicParsing="false" text="Categoria">
+                  <items>
+                    <MenuItem fx:id="menuItemClient" mnemonicParsing="false" onAction="#onMenuItemClientAction" text="Cliente" />
+                        <MenuItem mnemonicParsing="false" text="Pedido" />
+                        <MenuItem mnemonicParsing="false" text="Pizza" />
+                        <MenuItem mnemonicParsing="false" text="Adicional" />
+                        <MenuItem fx:id="menuItemInventory" mnemonicParsing="false" onAction="#onMenuItemInventoryAction" text="Estoque" />
+                  </items>
+                </Menu>
+                <Menu mnemonicParsing="false" text="Opções">
+                  <items>
+                    <MenuItem mnemonicParsing="false" text="Gerar PDF" />
+                  </items>
+                </Menu>
+              </menus>
+            </MenuBar>
+            <ImageView fitHeight="335.0" fitWidth="409.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../../../../../git/ProjetoPizzaria/Pizzaria/src/gui/view/VE/Rectangle%208.png" />
+               </image>
+               <VBox.margin>
+                  <Insets left="180.0" top="150.0" />
+               </VBox.margin>
+            </ImageView>
+         </children>
+      </VBox>
+   </content>
+</ScrollPane>
