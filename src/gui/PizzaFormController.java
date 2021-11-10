@@ -32,6 +32,10 @@ import model.exceptions.ValidationException;
 import model.vo.Pizza;
 import model.vo.PizzaSize;
 
+
+
+
+
 public class PizzaFormController implements Initializable {//classe Sujeito (emite o evento), instancia a interface DataChangeListener
 	
 	//criar a dependência (ak instanciar criando um set)
@@ -56,6 +60,7 @@ public class PizzaFormController implements Initializable {//classe Sujeito (emi
 	private ComboBox<PizzaSize> comboBoxPizzaSize;
 	
 	ObservableList<PizzaSize> obsList;
+
 	
 	@FXML
 	private Label labelErrorName;
@@ -63,17 +68,18 @@ public class PizzaFormController implements Initializable {//classe Sujeito (emi
 	@FXML
 	private Label labelErrorPrice;
 	
+	
 	@FXML
 	private Button btSave;
 	
 	@FXML
 	private Button btCancel;
 	
-	//set Seller (agora controlador tem instância do seller)
+	//set Inventory (agora controlador tem instância do Inventory)
 	public void setPizza(Pizza entity) {
 		this.entity = entity;
 	}
-	//set SellerService (agora controlador tem instância da classe de serviços do seller) MUDANÇA: agora o método pra ter o parâmentro DepartmentService também (de setSellerService para setServices)
+	//set InventoryBO (agora controlador tem instância da classe de serviços do Inventory)
 	public void setServices(PizzaBO service, PizzaSizeBO pizzaSizeService) {
 		this.service = service;
 		this.pizzaSizeService = pizzaSizeService;
@@ -86,7 +92,7 @@ public class PizzaFormController implements Initializable {//classe Sujeito (emi
 	//método para associar objetos da lista ao comboBox (botar o método no SellerListController) // método que inicializa o comboBox lá em baixo
 	public void loadAssociatedObjects() {
 		if (pizzaSizeService == null) {
-			throw new IllegalStateException("DepartmentService was null");
+			throw new IllegalStateException("PizzaSizeBO was null");
 		}
 		List<PizzaSize> list = pizzaSizeService.findAll();
 		obsList = FXCollections.observableArrayList(list);
@@ -129,7 +135,7 @@ public class PizzaFormController implements Initializable {//classe Sujeito (emi
 		obj.setId(Utils.tryParseToInt(textFieldId.getText()));//chamar o método para passar String para Integer
 		
 		//fazer validação para que o campo não seja vazio
-		//nome
+		//name
 		if(textFieldName.getText() == null || textFieldName.getText().trim().equals("")) {
 			exception.addError("name", "Field can't be empty");
 		}
@@ -166,11 +172,7 @@ public class PizzaFormController implements Initializable {//classe Sujeito (emi
 		
 		Utils.currentStage(event).close();//fechar janela após apertar
 	}
-	
-	
-	
-	
-	
+
 	/////////////////////////////////////////////////////////////////////////////////////////////
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
@@ -180,7 +182,7 @@ public class PizzaFormController implements Initializable {//classe Sujeito (emi
 	//colocar as constraints (ou limitações de inserção)
 	private void initializeNodes() {
 		Constraints.setTextFieldInteger(textFieldId);
-		Constraints.setTextFieldMaxLength(textFieldName, 35);
+		Constraints.setTextFieldMaxLength(textFieldName, 60);
 		Constraints.setTextFieldDouble(textFieldPrice);
 		
 		initializeComboBoxPizzaSize(); //chamar no "updateFormData"
@@ -205,6 +207,7 @@ public class PizzaFormController implements Initializable {//classe Sujeito (emi
 			comboBoxPizzaSize.setValue(entity.getPizzaSize());
 		}
 		
+		
 	}
 	
 	//método responsável por pegar os erros que estão na exceção (ValidationException) e escrevê-los nas tela (label vazio que foi deixado no SceneBuilder)
@@ -227,5 +230,6 @@ public class PizzaFormController implements Initializable {//classe Sujeito (emi
 		comboBoxPizzaSize.setCellFactory(factory);
 		comboBoxPizzaSize.setButtonCell(factory.call(null));
 	}
+	
 
 }//class

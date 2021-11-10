@@ -32,7 +32,7 @@ import javafx.stage.Stage;
 import model.bo.PizzaBO;
 import model.bo.PizzaSizeBO;
 import model.vo.Pizza;
-import model.vo.PizzaSize;
+
 
 
 public class PizzaListController implements Initializable, InterDataChangeListener { //o objeto desta classe é Observer (espera emissão de sinal das outras opara executar um determinado método)
@@ -54,10 +54,6 @@ public class PizzaListController implements Initializable, InterDataChangeListen
 	
 	@FXML
 	private TableColumn<Pizza, Double> tableColumnPrice;
-	
-	@FXML
-	private TableColumn<Pizza, PizzaSize> tableColumnPizzaSize; //Atenção
-
 	
 	@FXML
 	private TableColumn<Pizza, Pizza> tableColumnEDIT;
@@ -92,7 +88,6 @@ public class PizzaListController implements Initializable, InterDataChangeListen
 	private void initializeNodes() {
 		tableColumnId.setCellValueFactory(new PropertyValueFactory<>("id"));
 		tableColumnName.setCellValueFactory(new PropertyValueFactory<>("name"));
-		tableColumnPizzaSize.setCellValueFactory(new PropertyValueFactory<>("name")); //nome do tamanho da pizza
 		tableColumnPrice.setCellValueFactory(new PropertyValueFactory<>("price"));
 		Utils.formatTableColumnDouble(tableColumnPrice, 2);
 
@@ -102,7 +97,7 @@ public class PizzaListController implements Initializable, InterDataChangeListen
 
 	}
 	
-	//carregar os sellers em obsList (método responsável em acessar o serviço, carregar os sellers e jogar na ObservableList);
+	//carregar os objetos em obsList (método responsável em acessar o serviço, carregar os objetos e jogar na ObservableList);
 	public void updateTableView() {
 		if(service == null) {
 			throw new IllegalStateException("Service was null");
@@ -114,16 +109,16 @@ public class PizzaListController implements Initializable, InterDataChangeListen
 		initRemoveButtons();
 	}
 	
-	//janela departmentForm (instanciar a janela de diálogo)
+	//janela Form (instanciar a janela de diálogo)
 	private void createDialogForm(Pizza obj, String absoluteName, Stage parentStage) {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
 			Pane pane = loader.load();
 			
-			//injetar Seller obj no controlador na tela de novo cadastro(formulário) ANOTAÇÃO: instanciando o SellerFormController é possível chamar os seus métodos
+			//injetar Client obj no controlador na tela de novo cadastro(formulário) ANOTAÇÃO: instanciando o FormController é possível chamar os seus métodos
 			PizzaFormController controller = loader.getController(); //pega-se o controlador da tela que foi carregada
-			controller.setPizza(obj); 
-			controller.setServices(new PizzaBO(), new PizzaSizeBO());
+			controller.setPizza(obj); //injetar nesse controller o objeto
+			controller.setServices(new PizzaBO(), new PizzaSizeBO());//injetar BO (injeção de dependência)
 			controller.loadAssociatedObjects();
 			controller.subscribeDataChangeListener(this);//inscrevendo um listener para receber o evento que chamará o método "onDataChanged"
 			

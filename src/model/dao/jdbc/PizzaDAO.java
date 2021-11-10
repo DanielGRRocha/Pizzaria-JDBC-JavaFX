@@ -137,8 +137,6 @@ public class PizzaDAO extends BaseDAO implements InterDAO<Pizza> {
 
 			rs = pst.executeQuery();
 
-			// BO
-
 			List<Pizza> list = new ArrayList<>();
 			Map<Integer, PizzaSize> map = new HashMap<>();
 
@@ -164,10 +162,52 @@ public class PizzaDAO extends BaseDAO implements InterDAO<Pizza> {
 		}
 	}
 
+	public List<Pizza> findByPizzaSize(PizzaSize size) {
+
+		String SQL = "SELECT tb_pizza.*,tb_pizza_size.Name as SizeName FROM tb_pizza"
+				+ " INNER JOIN tb_pizza_size ON tb_pizza.pizza_size_id = tb_pizza_size.Id"
+				+ " WHERE pizza_size_id = ? ORDER BY Name";
+
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		try {
+			pst = getConnection().prepareStatement(SQL);
+
+			pst.setInt(1, size.getId());
+			rs = pst.executeQuery();
+
+
+			List<Pizza> list = new ArrayList<>();
+			Map<Integer, PizzaSize> map = new HashMap<>();
+
+			while (rs.next()) {
+
+				// verificar se já existe
+
+				PizzaSize pizzaSize = map.get(rs.getInt("DepartmentId"));
+				if (pizzaSize == null) {
+					pizzaSize = instantiatePizzaSize(rs);
+					map.put(rs.getInt("DepartmentId"), pizzaSize);
+				}
+
+				Pizza obj = instantiatePizza(rs, pizzaSize);
+				list.add(obj);
+			}
+			return list;
+		} catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		} finally {
+			DB.closeStatement(pst);
+			DB.closeResultSet(rs);
+		}
+	}// metodo
+
 	private Pizza instantiatePizza(ResultSet rs, PizzaSize pizzaSize) throws SQLException {
 		Pizza obj = new Pizza();
 		obj.setId(rs.getInt("id"));
 		obj.setName(rs.getString("name"));
+		obj.setPrice(rs.getDouble("price"));
+		obj.setPizzaSize(pizzaSize);
 
 		return obj;
 	}
