@@ -12,6 +12,8 @@ public class Pizza implements Serializable {
 	
 	private PizzaSize pizzaSize;
 	
+	private Integer size;
+	
 	public Pizza() {
 	}
 
@@ -54,6 +56,13 @@ public class Pizza implements Serializable {
 		this.pizzaSize = pizzaSize;
 	}
 	
+	public Integer getSize() {
+		return pizzaSize.getId();
+	}
+	
+	public void setSize(Integer size) {
+		this.size = size;
+	}
 
 	@Override
 	public int hashCode() {

@@ -56,6 +56,9 @@ public class PizzaListController implements Initializable, InterDataChangeListen
 	private TableColumn<Pizza, Double> tableColumnPrice;
 	
 	@FXML
+	private TableColumn<Pizza, Integer> tableColumnPizzaSize;
+	
+	@FXML
 	private TableColumn<Pizza, Pizza> tableColumnEDIT;
 	
 	@FXML
@@ -90,6 +93,7 @@ public class PizzaListController implements Initializable, InterDataChangeListen
 		tableColumnName.setCellValueFactory(new PropertyValueFactory<>("name"));
 		tableColumnPrice.setCellValueFactory(new PropertyValueFactory<>("price"));
 		Utils.formatTableColumnDouble(tableColumnPrice, 2);
+		tableColumnPizzaSize.setCellValueFactory((new PropertyValueFactory<>("size")));
 
 		// table ir até o final
 		Stage stage = (Stage) Main.getMainScene().getWindow();

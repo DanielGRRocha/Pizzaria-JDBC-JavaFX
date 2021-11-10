@@ -29,6 +29,7 @@
             <TableColumn fx:id="tableColumnId" prefWidth="45.0" text="Id" />
             <TableColumn fx:id="tableColumnName" prefWidth="266.0" text="Sabor" />
             <TableColumn fx:id="tableColumnPrice" prefWidth="266.0" text="Preço" />
+            <TableColumn fx:id="tableColumnPizzaSize" prefWidth="75.0" text="Tamanho" />
             <TableColumn fx:id="tableColumnEDIT" prefWidth="75.0" />
             <TableColumn fx:id="tableColumnREMOVE" prefWidth="75.0" />
         </columns>

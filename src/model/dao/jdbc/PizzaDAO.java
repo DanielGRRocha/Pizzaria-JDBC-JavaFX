@@ -128,7 +128,7 @@ public class PizzaDAO extends BaseDAO implements InterDAO<Pizza> {
 	@Override
 	public List<Pizza> findAll() {
 		String SQL = "SELECT tb_pizza.*,tb_pizza_size.Name as SizeName FROM tb_pizza"
-				+ " INNER JOIN tb_pizza_size ON tb_pizza.pizza_size_id = tb_pizza_size.Id";
+				+ " INNER JOIN tb_pizza_size ON tb_pizza.pizza_size_id = tb_pizza_size.Id order by id asc";
 
 		PreparedStatement pst = null;
 		ResultSet rs = null;
