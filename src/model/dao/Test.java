@@ -2,8 +2,12 @@ package model.dao;
 
 import model.dao.jdbc.ClientDAO;
 import model.dao.jdbc.InventoryDAO;
+import model.dao.jdbc.PizzaDAO;
+import model.dao.jdbc.PizzaSizeDAO;
 import model.vo.Client;
 import model.vo.Inventory;
+import model.vo.Pizza;
+import model.vo.PizzaSize;
 
 public class Test {
 
@@ -20,11 +24,15 @@ public class Test {
 //		for (Client x : dao.findAll()) {
 //			System.out.println(x.getName());
 //		}
-
+		
+		
 		// inventory
-		Inventory obj = new Inventory(null, "Queijo", 1);
+		
+		PizzaSizeDAO daos = new PizzaSizeDAO();
+		
+		Pizza obj = new Pizza(null, "Mussarela", 20.0, daos.findById(1));
 
-		InventoryDAO dao = new InventoryDAO();
+		PizzaDAO dao = new PizzaDAO();
 
 		dao.insert(obj);
 		// dao.deleteById(3);

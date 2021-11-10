@@ -19,6 +19,7 @@ import javafx.scene.layout.VBox;
 import model.bo.AdditionalBO;
 import model.bo.ClientBO;
 import model.bo.InventoryBO;
+import model.bo.PizzaBO;
 
 
 public class MainViewController implements Initializable {
@@ -31,6 +32,9 @@ public class MainViewController implements Initializable {
 	
 	@FXML
 	private MenuItem menuItemAdditional;
+	
+	@FXML
+	private MenuItem menuItemPizza;
 	
 	
 	@FXML
@@ -53,6 +57,14 @@ public class MainViewController implements Initializable {
 	public void onMenuItemAdditionalAction() {
 		loadView("/gui/AdditionalList.fxml", (AdditionalListController controller) -> {
 			controller.setAdditionalBO(new AdditionalBO());
+			controller.updateTableView();
+		});
+	}
+	
+	@FXML
+	public void onMenuItemPizzaAction() {
+		loadView("/gui/PizzaList.fxml", (PizzaListController controller) -> {
+			controller.setPizzaBO(new PizzaBO());
 			controller.updateTableView();
 		});
 	}
