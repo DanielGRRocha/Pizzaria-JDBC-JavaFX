@@ -11,7 +11,7 @@
 
 <VBox prefHeight="633.0" prefWidth="830.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.AdditionalListController">
    <children>
-      <Label text="Registro Item">
+      <Label text="Registro Adicional">
          <font>
             <Font name="System Bold" size="14.0" />
          </font>

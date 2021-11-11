@@ -32,6 +32,7 @@ import javafx.stage.Stage;
 import model.bo.PizzaBO;
 import model.bo.PizzaSizeBO;
 import model.vo.Pizza;
+import model.vo.PizzaSize;
 
 
 
@@ -56,7 +57,7 @@ public class PizzaListController implements Initializable, InterDataChangeListen
 	private TableColumn<Pizza, Double> tableColumnPrice;
 	
 	@FXML
-	private TableColumn<Pizza, Integer> tableColumnPizzaSize;
+	private TableColumn<Pizza, PizzaSize> tableColumnPizzaSize;
 	
 	@FXML
 	private TableColumn<Pizza, Pizza> tableColumnEDIT;
@@ -93,7 +94,8 @@ public class PizzaListController implements Initializable, InterDataChangeListen
 		tableColumnName.setCellValueFactory(new PropertyValueFactory<>("name"));
 		tableColumnPrice.setCellValueFactory(new PropertyValueFactory<>("price"));
 		Utils.formatTableColumnDouble(tableColumnPrice, 2);
-		tableColumnPizzaSize.setCellValueFactory((new PropertyValueFactory<>("size")));
+		tableColumnPizzaSize.setCellValueFactory((new PropertyValueFactory<>("pizzaSize")));
+		Utils.formatTableColumnSubProperty(tableColumnPizzaSize, pizzaSize -> pizzaSize.getName());
 
 		// table ir até o final
 		Stage stage = (Stage) Main.getMainScene().getWindow();

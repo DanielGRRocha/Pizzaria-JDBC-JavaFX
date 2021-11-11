@@ -184,10 +184,10 @@ public class PizzaDAO extends BaseDAO implements InterDAO<Pizza> {
 
 				// verificar se já existe
 
-				PizzaSize pizzaSize = map.get(rs.getInt("DepartmentId"));
+				PizzaSize pizzaSize = map.get(rs.getInt("pizza_size_id"));
 				if (pizzaSize == null) {
 					pizzaSize = instantiatePizzaSize(rs);
-					map.put(rs.getInt("DepartmentId"), pizzaSize);
+					map.put(rs.getInt("pizza_size_id"), pizzaSize);
 				}
 
 				Pizza obj = instantiatePizza(rs, pizzaSize);
@@ -214,8 +214,8 @@ public class PizzaDAO extends BaseDAO implements InterDAO<Pizza> {
 
 	private PizzaSize instantiatePizzaSize(ResultSet rs) throws SQLException {
 		PizzaSize pizzaSize = new PizzaSize();
-		pizzaSize.setId(rs.getInt("id"));
-		pizzaSize.setName(rs.getString("name"));
+		pizzaSize.setId(rs.getInt("pizza_size_id"));
+		pizzaSize.setName(rs.getString("SizeName"));
 		return pizzaSize;
 	}
 

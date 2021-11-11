@@ -5,13 +5,18 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Locale;
+import java.util.function.Function;
 
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import javafx.util.StringConverter;
 
 public class Utils {
@@ -103,5 +108,43 @@ public class Utils {
 			}
 		});
 	}
+	
+	// Method to show, in a table of type T, in a column of type S, an attribute of type U
+		public static <T, S, U> void formatTableColumnSubProperty(TableColumn<T, S> tableColumn, Function<S, U> showSubProperty) {
+			tableColumn.setCellFactory(column -> {
+				TableCell<T, S> cell = new TableCell<>(){				
+					
+					@Override
+					protected void updateItem(S item, boolean empty) {
+						super.updateItem(item, empty);
+						if(empty) {
+							setText(null);
+						}
+						else {
+							setText(String.valueOf(showSubProperty.apply(item)));
+						}
+					}
+				};
+				return cell;
+			});
+		}
+		
+		public static <T, S> void formatComboBox(ComboBox<T> comboBox, Function<T, S> showProperty) {
+			Callback<ListView<T>, ListCell<T>> factory = lv -> new ListCell<>() {
+				
+				@Override
+				protected void updateItem(T item, boolean empty) {
+					super.updateItem(item, empty);
+					if(empty) {
+						setText(null);
+					}
+					else {
+						setText(String.valueOf(showProperty.apply(item)));
+					}				
+				}
+			};
+			comboBox.setCellFactory(factory);
+			comboBox.setButtonCell(factory.call(null));
+		}
 
 }// class

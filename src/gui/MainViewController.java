@@ -36,6 +36,9 @@ public class MainViewController implements Initializable {
 	@FXML
 	private MenuItem menuItemPizza;
 	
+	@FXML
+	private MenuItem menuItemAbout;
+	
 	
 	@FXML
 	public void onMenuItemClientAction() {
@@ -71,7 +74,7 @@ public class MainViewController implements Initializable {
 	
 	@FXML
 	public void onMenuItemAboutAction() {
-		loadView("/gui/About.fxml", x -> {});
+		loadView("/gui/Login.fxml", x -> {});
 	}
 	
 	@Override

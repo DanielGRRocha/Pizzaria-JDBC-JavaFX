@@ -185,7 +185,8 @@ public class PizzaFormController implements Initializable {//classe Sujeito (emi
 		Constraints.setTextFieldMaxLength(textFieldName, 60);
 		Constraints.setTextFieldDouble(textFieldPrice);
 		
-		initializeComboBoxPizzaSize(); //chamar no "updateFormData"
+//		initializeComboBoxPizzaSize(); //chamar no "updateFormData"
+		Utils.formatComboBox(comboBoxPizzaSize, pizzaSize -> pizzaSize.getName());
 		
 	}
 	
@@ -219,17 +220,7 @@ public class PizzaFormController implements Initializable {//classe Sujeito (emi
 		
 	}
 	
-	private void initializeComboBoxPizzaSize() {//chamar no InitializeNodes
-		Callback<ListView<PizzaSize>, ListCell<PizzaSize>> factory = lv -> new ListCell<PizzaSize>() {
-			@Override
-			protected void updateItem(PizzaSize item, boolean empty) {
-				super.updateItem(item, empty);
-				setText(empty ? "" : item.getName());
-			}
-		};
-		comboBoxPizzaSize.setCellFactory(factory);
-		comboBoxPizzaSize.setButtonCell(factory.call(null));
-	}
+
 	
 
 }//class
