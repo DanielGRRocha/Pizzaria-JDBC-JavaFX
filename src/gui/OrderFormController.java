@@ -1,7 +1,10 @@
 package gui;
 
 import java.net.URL;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -92,6 +95,8 @@ public class OrderFormController implements Initializable {//classe Sujeito (emi
 	
 	ObservableList<OrderStatus> obsListOrderStatus;
 	
+	@FXML
+	private Label labelErrorMoment;
 	
 	@FXML
 	private Button btSave;
@@ -99,11 +104,10 @@ public class OrderFormController implements Initializable {//classe Sujeito (emi
 	@FXML
 	private Button btCancel;
 	
-	//set Inventory (agora controlador tem instância do Inventory)
 	public void setOrder(Order entity) {
 		this.entity = entity;
 	}
-	//set InventoryBO (agora controlador tem instância da classe de serviços do Inventory)
+	
 	public void setServices(OrderBO service, ClientBO clientService, PizzaBO pizzaService, PizzaSizeBO pizzaSizeService, AdditionalBO additionalService, OrderStatusBO orderStatusService) {
 		this.service = service;
 		this.clientService = clientService;
@@ -112,12 +116,11 @@ public class OrderFormController implements Initializable {//classe Sujeito (emi
 		this.additionalService = additionalService;
 		this.orderStatusService = orderStatusService;
 	}
-	//método para adicionar objetos na lista "dataChangeListeners"
-	public void subscribeDataChangeListener(InterDataChangeListener listener) {//objetos que implementarem a interface "DataChangeListener" podem se inscrever para receber o evento da classe
+
+	public void subscribeDataChangeListener(InterDataChangeListener listener) {
 		dataChangeListeners.add(listener);
 	}
 	
-	//método para associar objetos da lista ao comboBox (botar o método no SellerListController) // método que inicializa o comboBox lá em baixo
 	public void loadAssociatedObjects() {
 		//client
 		if (clientService == null) {
@@ -174,8 +177,8 @@ public class OrderFormController implements Initializable {//classe Sujeito (emi
 		try {
 			entity = getFormData();
 			service.saveOrUpdate(entity);
-			notifyDataChangeListeners(); //autoexplicativo, chama o método que irá notificar os listeners que deu certo e eles irão atualizar a tabela
-			//fechar a janela após salvar (adiciona esse parâmentro no método)
+			notifyDataChangeListeners(); 
+
 			Utils.currentStage(event).close();
 			
 		}
@@ -188,28 +191,43 @@ public class OrderFormController implements Initializable {//classe Sujeito (emi
 	}
 	
 	
-	private Pizza getFormData() {//pegar os dados do formulario
-		Pizza obj = new Pizza();
+	private Order getFormData() {
+		Order obj = new Order();
 		
 		ValidationException exception = new ValidationException("Validation error");
 		
-		obj.setId(Utils.tryParseToInt(textFieldId.getText()));//chamar o método para passar String para Integer
+		//id
+		obj.setId(Utils.tryParseToInt(textFieldId.getText()));
 		
-		//fazer validação para que o campo não seja vazio
-		//name
-		if(textFieldName.getText() == null || textFieldName.getText().trim().equals("")) {
-			exception.addError("name", "Field can't be empty");
-		}
-		obj.setName(textFieldName.getText());
+		//Client
+		obj.setClient(comboBoxClient.getValue());
 		
-		//price
-		if(textFieldPrice.getText() == null || textFieldPrice.getText().trim().equals("")) {
-			exception.addError("price", "Field can't be empty");
-		}
-		obj.setPrice(Utils.tryParseToDouble(textFieldPrice.getText()));
+		//Pizza
+		obj.setPizza(comboBoxPizza.getValue());
 		
 		//PizzaSize
 		obj.setPizzaSize(comboBoxPizzaSize.getValue());
+		
+		//Additional
+		obj.setAdditional(comboBoxAdditional.getValue());
+		
+		//OrderStatus
+		obj.setOrderStatus(comboBoxOrderStatus.getValue());
+		
+		//Moment
+		if(dpMoment.getValue() == null) {
+			exception.addError("moment", "Field can't be empty");
+		}
+		else {
+			Instant instant = Instant.from(dpMoment.getValue().atStartOfDay(ZoneId.systemDefault()));
+			obj.setMoment(Date.from(instant));
+		}
+		
+		//Total
+		if(textFieldTotal.getText() == null || textFieldTotal.getText().trim().equals("")) {
+			exception.addError("total", "Field can't be empty");
+		}
+		obj.setTotal(Utils.tryParseToDouble(textFieldTotal.getText()));
 		
 		//erros
 		if(exception.getErrors().size() > 0) {
@@ -219,69 +237,94 @@ public class OrderFormController implements Initializable {//classe Sujeito (emi
 		return obj;
 	}
 	
-	private void notifyDataChangeListeners() {//método que irá notificar os listeners(método da interface) que deu certo e eles irão atualizar a tabela (será chamado pelas classes)
-	//obs: SellerFormController emite o evento. É preciso fazer uma implementação na classe que recebe o evento e executa o método de atualizar a lista (SellerListController)	
+	private void notifyDataChangeListeners() {
 		for (InterDataChangeListener listener : dataChangeListeners) {
 			listener.onDataChanged();
 		}
 		
 	}
 	
-	//evento botão cancelar
+
 	@FXML
 	public void onBtCancelAction(ActionEvent event) {
 		
 		Utils.currentStage(event).close();//fechar janela após apertar
 	}
 
-	/////////////////////////////////////////////////////////////////////////////////////////////
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
 		initializeNodes();
 	}
 	
-	//colocar as constraints (ou limitações de inserção)
 	private void initializeNodes() {
 		Constraints.setTextFieldInteger(textFieldId);
-		Constraints.setTextFieldMaxLength(textFieldName, 60);
-		Constraints.setTextFieldDouble(textFieldPrice);
-		
-//		initializeComboBoxPizzaSize(); //chamar no "updateFormData"
+		Utils.formatComboBox(comboBoxClient, client -> client.getName());
+		Utils.formatComboBox(comboBoxPizza, pizza -> pizza.getName());
 		Utils.formatComboBox(comboBoxPizzaSize, pizzaSize -> pizzaSize.getName());
+		Utils.formatComboBox(comboBoxAdditional, additional -> additional.getName());
+		Utils.formatComboBox(comboBoxOrderStatus, orderStatus -> orderStatus.getName());
+		Utils.formatDatePicker(dpMoment, "dd/MM/yyyy");
+		Constraints.setTextFieldDouble(textFieldTotal);
 		
 	}
 	
-	//método updateFormData que irá pegar os dados do seller e popular as caixinhas de texto do formulário (settar)
 	public void updateFormData() {
-		//programação defensiva: criar um if para verificar entity está valendo nulo
+
 		if(entity == null) {
 			throw new IllegalStateException("Entity was null");
 		}
 		
-		textFieldId.setText(String.valueOf(entity.getId())); //converte Interger em String
-		textFieldName.setText(entity.getName());
-		Locale.setDefault(Locale.US);
-		textFieldPrice.setText(String.format("%.2f", entity.getPrice()));
+		//id
+		textFieldId.setText(String.valueOf(entity.getId()));
 		
+		//total
+		Locale.setDefault(Locale.US);
+		textFieldTotal.setText(String.format("%.2f", entity.getTotal()));
+		
+		// client
+		if (entity.getClient() == null) {
+			comboBoxClient.getSelectionModel().selectFirst();
+		} else {
+			comboBoxClient.setValue(entity.getClient());
+		}
+		
+		// pizza
+		if (entity.getPizza() == null) {
+			comboBoxPizza.getSelectionModel().selectFirst();
+		} else {
+			comboBoxPizza.setValue(entity.getPizza());
+		}
+		
+		//pizzaSize
 		if(entity.getPizzaSize() == null) {
 			comboBoxPizzaSize.getSelectionModel().selectFirst();
 		} else {
 			comboBoxPizzaSize.setValue(entity.getPizzaSize());
 		}
 		
+		//additional
+		if (entity.getAdditional() == null) {
+			comboBoxAdditional.getSelectionModel().selectFirst();
+		} else {
+			comboBoxAdditional.setValue(entity.getAdditional());
+		}
+		
+		//orderStatus
+		if (entity.getOrderStatus() == null) {
+			comboBoxOrderStatus.getSelectionModel().selectFirst();
+		} else {
+			comboBoxOrderStatus.setValue(entity.getOrderStatus());
+		}
 		
 	}
 	
 	//método responsável por pegar os erros que estão na exceção (ValidationException) e escrevê-los nas tela (label vazio que foi deixado no SceneBuilder)
-	private void setErrorMessages(Map<String,String> errors) {//no método do evento do botão save, inserir ValidationException (catch)
+	private void setErrorMessages(Map<String,String> errors) {
 		Set<String> fields = errors.keySet();
 		
-		labelErrorName.setText((fields.contains("name") ? errors.get("name") : ""));
-		labelErrorPrice.setText((fields.contains("price") ? errors.get("price") : ""));
+		labelErrorMoment.setText((fields.contains("moment") ? errors.get("moment") : ""));
 		
 	}
-	
-
 	
 
 }//class
