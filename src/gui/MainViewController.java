@@ -19,6 +19,7 @@ import javafx.scene.layout.VBox;
 import model.bo.AdditionalBO;
 import model.bo.ClientBO;
 import model.bo.InventoryBO;
+import model.bo.OrderBO;
 import model.bo.PizzaBO;
 
 
@@ -35,6 +36,9 @@ public class MainViewController implements Initializable {
 	
 	@FXML
 	private MenuItem menuItemPizza;
+	
+	@FXML
+	private MenuItem menuItemOrder;
 	
 	@FXML
 	private MenuItem menuItemAbout;
@@ -71,6 +75,14 @@ public class MainViewController implements Initializable {
 			controller.updateTableView();
 		});
 	}
+	
+//	@FXML
+//	public void onMenuItemOrderAction() {
+//		loadView("/gui/OrderList.fxml", (OrderListController controller) -> {
+//			controller.setOrderBO(new OrderBO());
+//			controller.updateTableView();
+//		});
+//	}
 	
 	@FXML
 	public void onMenuItemAboutAction() {

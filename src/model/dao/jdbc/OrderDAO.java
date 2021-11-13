@@ -3,6 +3,7 @@ package model.dao.jdbc;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,26 +24,132 @@ public class OrderDAO extends BaseDAO implements InterOrderDAO<Order> {
 
 	@Override
 	public void insert(Order obj) {
-		// TODO Auto-generated method stub
+		String SQL = "INSERT INTO tb_order (client_id, pizza_id, pizza_size_id, additional_id, order_status_id, moment, total) VALUES (?,?,?,?,?,?,?)";
+
+		PreparedStatement pst = null;
+
+		try {
+			pst = getConnection().prepareStatement(SQL, Statement.RETURN_GENERATED_KEYS);
+
+			pst.setInt(1, obj.getClient().getId());
+			pst.setInt(2, obj.getPizza().getId());
+			pst.setInt(3, obj.getPizzaSize().getId());
+			pst.setInt(4, obj.getAdditional().getId());
+			pst.setInt(5, obj.getOrderStatus().getId());
+			pst.setDate(6, new java.sql.Date(obj.getMoment().getTime()));
+			pst.setDouble(7, obj.getPizza().getPrice() + obj.getAdditional().getPrice());
+
+			int rowsAffected = pst.executeUpdate();
+
+			if (rowsAffected > 0) {
+				ResultSet rs = pst.getGeneratedKeys();
+				if (rs.next()) {
+					int id = rs.getInt(1);
+					obj.setId(id);
+				}
+				DB.closeResultSet(rs);
+			} else {
+				throw new DbException("Unexpected error! No rows affected!");
+			}
+
+		} catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		} finally {
+			DB.closeStatement(pst);
+		}
 		
 	}
 
 	@Override
 	public void update(Order obj) {
-		// TODO Auto-generated method stub
+		String SQL = "UPDATE tb_order SET client_id = ?, pizza_id = ?, pizza_size_id = ?, additional_id = ?, order_status_id = ?, moment = ? WHERE id = ?";
+
+		PreparedStatement pst = null;
+
+		try {
+			pst = getConnection().prepareStatement(SQL, Statement.RETURN_GENERATED_KEYS);
+
+			pst.setInt(1, obj.getClient().getId());
+			pst.setInt(2, obj.getPizza().getId());
+			pst.setInt(3, obj.getPizzaSize().getId());
+			pst.setInt(4, obj.getAdditional().getId());
+			pst.setInt(5, obj.getOrderStatus().getId());
+			pst.setDate(6, new java.sql.Date(obj.getMoment().getTime()));
+
+			pst.setInt(7, obj.getId());
+
+			pst.executeUpdate();
+
+		} catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		} finally {
+			DB.closeStatement(pst);
+		}
 		
 	}
 
 	@Override
 	public void deleteById(Integer id) {
-		// TODO Auto-generated method stub
+		String SQL = "DELETE FROM tb_order WHERE id = ?";
+
+		PreparedStatement pst = null;
+
+		try {
+			pst = getConnection().prepareStatement(SQL);
+
+			pst.setInt(1, id);
+			pst.executeUpdate();
+
+		} catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		} finally {
+			DB.closeStatement(pst);
+		}
 		
 	}
 
 	@Override
 	public Order findById(Integer id) {
-		// TODO Auto-generated method stub
-		return null;
+		String SQL = "SELECT tb_order.*,"
+				+ " tb_client.Name as ClientName,"
+				+ " tb_pizza.Name as PizzaName,"
+				+ " tb_pizza_size.Name as SizeName,"
+				+ " tb_additional.Name as AdditionalName,"
+				+ " tb_order_status.Name as StatusName"
+				+ " FROM tb_order"
+				+ " INNER JOIN tb_client ON (tb_order.client_id = tb_client.Id)"
+				+ " INNER JOIN tb_pizza ON (tb_order.pizza_id = tb_pizza.Id)"
+				+ " INNER JOIN  tb_pizza_size ON (tb_order.pizza_size_id = tb_pizza_size.Id)"
+				+ " INNER JOIN tb_additional ON (tb_order.additional_id = tb_additional.Id)"
+				+ " INNER JOIN tb_order_status ON (tb_order.order_status_id = tb_order_status.Id)"
+				+ " WHERE tb_order.id = ? ORDER BY id ASC";
+
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		try {
+			pst = getConnection().prepareStatement(SQL);
+			
+			pst.setInt(1,  id);
+			rs = pst.executeQuery();
+
+			if (rs.next()) {
+
+				Client client = instantiateClient(rs);
+				Pizza pizza = instantiatePizza(rs);
+				PizzaSize pizzaSize = instantiatePizzaSize(rs);
+				Additional additional = instantiateAdditional(rs);
+				OrderStatus orderStatus = instantiateOrderStatus(rs);
+				
+				Order obj = instantiateOrder(rs, client, pizza, pizzaSize, additional, orderStatus);
+				return obj;
+			}
+			return null;
+		} catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		} finally {
+			DB.closeStatement(pst);
+			DB.closeResultSet(rs);
+		}
 	}
 
 	@Override
@@ -119,27 +226,303 @@ public class OrderDAO extends BaseDAO implements InterOrderDAO<Order> {
 	}
 
 	@Override
-	public List<Order> findByClientId(Integer id) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<Order> findByClient(Client entity) {
+		String SQL = "SELECT tb_order.*,"
+				+ " tb_client.Name as ClientName,"
+				+ " tb_pizza.Name as PizzaName,"
+				+ " tb_pizza_size.Name as SizeName,"
+				+ " tb_additional.Name as AdditionalName,"
+				+ " tb_order_status.Name as StatusName"
+				+ " FROM tb_order"
+				+ " INNER JOIN tb_client ON (tb_order.client_id = tb_client.Id)"
+				+ " INNER JOIN tb_pizza ON (tb_order.pizza_id = tb_pizza.Id)"
+				+ " INNER JOIN  tb_pizza_size ON (tb_order.pizza_size_id = tb_pizza_size.Id)"
+				+ " INNER JOIN tb_additional ON (tb_order.additional_id = tb_additional.Id)"
+				+ " INNER JOIN tb_order_status ON (tb_order.order_status_id = tb_order_status.Id)"
+				+ " WHERE client_id = ? ORDER BY id ASC";
+
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		try {
+			pst = getConnection().prepareStatement(SQL);
+			
+			pst.setInt(1,  entity.getId());
+			rs = pst.executeQuery();
+
+			List<Order> list = new ArrayList<>();
+			Map<Integer, Client> map1 = new HashMap<>();
+			Map<Integer, Pizza> map2 = new HashMap<>();
+			Map<Integer, PizzaSize> map3 = new HashMap<>();
+			Map<Integer, Additional> map4 = new HashMap<>();
+			Map<Integer, OrderStatus> map5 = new HashMap<>();
+
+			while (rs.next()) {
+
+				Client client = map1.get(rs.getInt("client_id"));
+				Pizza pizza = map2.get(rs.getInt("pizza_id"));
+				PizzaSize pizzaSize = map3.get(rs.getInt("pizza_size_id"));
+				Additional additional = map4.get(rs.getInt("additional_id"));
+				OrderStatus orderStatus = map5.get(rs.getInt("order_status_id"));
+				if (client == null) {
+					client = instantiateClient(rs);
+					map1.put(rs.getInt("client_id"), client);
+				}
+				
+				if (pizza == null) {
+					pizza = instantiatePizza(rs);
+					map2.put(rs.getInt("pizza_id"), pizza);
+				}
+				
+				if (pizzaSize == null) {
+					pizzaSize = instantiatePizzaSize(rs);
+					map3.put(rs.getInt("pizza_size_id"), pizzaSize);
+				}
+				
+				if (additional == null) {
+					additional = instantiateAdditional(rs);
+					map4.put(rs.getInt("additional_id"), additional);
+				}
+				
+				if (orderStatus == null) {
+					orderStatus = instantiateOrderStatus(rs);
+					map5.put(rs.getInt("order_status_id"), orderStatus);
+				}
+
+				Order obj = instantiateOrder(rs, client, pizza, pizzaSize, additional, orderStatus);
+				list.add(obj);
+			}
+			return list;
+		} catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		} finally {
+			DB.closeStatement(pst);
+			DB.closeResultSet(rs);
+		}
 	}
 
 	@Override
-	public List<Order> findByPizzaSizeId(Integer id) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<Order> findByPizzaSize(PizzaSize entity) {
+		String SQL = "SELECT tb_order.*,"
+				+ " tb_client.Name as ClientName,"
+				+ " tb_pizza.Name as PizzaName,"
+				+ " tb_pizza_size.Name as SizeName,"
+				+ " tb_additional.Name as AdditionalName,"
+				+ " tb_order_status.Name as StatusName"
+				+ " FROM tb_order"
+				+ " INNER JOIN tb_client ON (tb_order.client_id = tb_client.Id)"
+				+ " INNER JOIN tb_pizza ON (tb_order.pizza_id = tb_pizza.Id)"
+				+ " INNER JOIN  tb_pizza_size ON (tb_order.pizza_size_id = tb_pizza_size.Id)"
+				+ " INNER JOIN tb_additional ON (tb_order.additional_id = tb_additional.Id)"
+				+ " INNER JOIN tb_order_status ON (tb_order.order_status_id = tb_order_status.Id)"
+				+ " WHERE pizza_size_id = ? ORDER BY id ASC";
+
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		try {
+			pst = getConnection().prepareStatement(SQL);
+			
+			pst.setInt(1,  entity.getId());
+			rs = pst.executeQuery();
+
+			List<Order> list = new ArrayList<>();
+			Map<Integer, Client> map1 = new HashMap<>();
+			Map<Integer, Pizza> map2 = new HashMap<>();
+			Map<Integer, PizzaSize> map3 = new HashMap<>();
+			Map<Integer, Additional> map4 = new HashMap<>();
+			Map<Integer, OrderStatus> map5 = new HashMap<>();
+
+			while (rs.next()) {
+
+				Client client = map1.get(rs.getInt("client_id"));
+				Pizza pizza = map2.get(rs.getInt("pizza_id"));
+				PizzaSize pizzaSize = map3.get(rs.getInt("pizza_size_id"));
+				Additional additional = map4.get(rs.getInt("additional_id"));
+				OrderStatus orderStatus = map5.get(rs.getInt("order_status_id"));
+				if (client == null) {
+					client = instantiateClient(rs);
+					map1.put(rs.getInt("client_id"), client);
+				}
+				
+				if (pizza == null) {
+					pizza = instantiatePizza(rs);
+					map2.put(rs.getInt("pizza_id"), pizza);
+				}
+				
+				if (pizzaSize == null) {
+					pizzaSize = instantiatePizzaSize(rs);
+					map3.put(rs.getInt("pizza_size_id"), pizzaSize);
+				}
+				
+				if (additional == null) {
+					additional = instantiateAdditional(rs);
+					map4.put(rs.getInt("additional_id"), additional);
+				}
+				
+				if (orderStatus == null) {
+					orderStatus = instantiateOrderStatus(rs);
+					map5.put(rs.getInt("order_status_id"), orderStatus);
+				}
+
+				Order obj = instantiateOrder(rs, client, pizza, pizzaSize, additional, orderStatus);
+				list.add(obj);
+			}
+			return list;
+		} catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		} finally {
+			DB.closeStatement(pst);
+			DB.closeResultSet(rs);
+		}
 	}
 
 	@Override
-	public List<Order> findByOrderStatusId(Integer id) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<Order> findByOrderStatus(OrderStatus entity) {
+		String SQL = "SELECT tb_order.*,"
+				+ " tb_client.Name as ClientName,"
+				+ " tb_pizza.Name as PizzaName,"
+				+ " tb_pizza_size.Name as SizeName,"
+				+ " tb_additional.Name as AdditionalName,"
+				+ " tb_order_status.Name as StatusName"
+				+ " FROM tb_order"
+				+ " INNER JOIN tb_client ON (tb_order.client_id = tb_client.Id)"
+				+ " INNER JOIN tb_pizza ON (tb_order.pizza_id = tb_pizza.Id)"
+				+ " INNER JOIN  tb_pizza_size ON (tb_order.pizza_size_id = tb_pizza_size.Id)"
+				+ " INNER JOIN tb_additional ON (tb_order.additional_id = tb_additional.Id)"
+				+ " INNER JOIN tb_order_status ON (tb_order.order_status_id = tb_order_status.Id)"
+				+ " WHERE order_status_id = ? ORDER BY id ASC";
+
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		try {
+			pst = getConnection().prepareStatement(SQL);
+			
+			pst.setInt(1,  entity.getId());
+			rs = pst.executeQuery();
+
+			List<Order> list = new ArrayList<>();
+			Map<Integer, Client> map1 = new HashMap<>();
+			Map<Integer, Pizza> map2 = new HashMap<>();
+			Map<Integer, PizzaSize> map3 = new HashMap<>();
+			Map<Integer, Additional> map4 = new HashMap<>();
+			Map<Integer, OrderStatus> map5 = new HashMap<>();
+
+			while (rs.next()) {
+
+				Client client = map1.get(rs.getInt("client_id"));
+				Pizza pizza = map2.get(rs.getInt("pizza_id"));
+				PizzaSize pizzaSize = map3.get(rs.getInt("pizza_size_id"));
+				Additional additional = map4.get(rs.getInt("additional_id"));
+				OrderStatus orderStatus = map5.get(rs.getInt("order_status_id"));
+				if (client == null) {
+					client = instantiateClient(rs);
+					map1.put(rs.getInt("client_id"), client);
+				}
+				
+				if (pizza == null) {
+					pizza = instantiatePizza(rs);
+					map2.put(rs.getInt("pizza_id"), pizza);
+				}
+				
+				if (pizzaSize == null) {
+					pizzaSize = instantiatePizzaSize(rs);
+					map3.put(rs.getInt("pizza_size_id"), pizzaSize);
+				}
+				
+				if (additional == null) {
+					additional = instantiateAdditional(rs);
+					map4.put(rs.getInt("additional_id"), additional);
+				}
+				
+				if (orderStatus == null) {
+					orderStatus = instantiateOrderStatus(rs);
+					map5.put(rs.getInt("order_status_id"), orderStatus);
+				}
+
+				Order obj = instantiateOrder(rs, client, pizza, pizzaSize, additional, orderStatus);
+				list.add(obj);
+			}
+			return list;
+		} catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		} finally {
+			DB.closeStatement(pst);
+			DB.closeResultSet(rs);
+		}
 	}
 
 	@Override
-	public List<Order> findByPizzaId(Integer id) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<Order> findByPizza(Pizza entity) {
+		String SQL = "SELECT tb_order.*,"
+				+ " tb_client.Name as ClientName,"
+				+ " tb_pizza.Name as PizzaName,"
+				+ " tb_pizza_size.Name as SizeName,"
+				+ " tb_additional.Name as AdditionalName,"
+				+ " tb_order_status.Name as StatusName"
+				+ " FROM tb_order"
+				+ " INNER JOIN tb_client ON (tb_order.client_id = tb_client.Id)"
+				+ " INNER JOIN tb_pizza ON (tb_order.pizza_id = tb_pizza.Id)"
+				+ " INNER JOIN  tb_pizza_size ON (tb_order.pizza_size_id = tb_pizza_size.Id)"
+				+ " INNER JOIN tb_additional ON (tb_order.additional_id = tb_additional.Id)"
+				+ " INNER JOIN tb_order_status ON (tb_order.order_status_id = tb_order_status.Id)"
+				+ " WHERE pizza_id = ? ORDER BY id ASC";
+
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		try {
+			pst = getConnection().prepareStatement(SQL);
+			
+			pst.setInt(1,  entity.getId());
+			rs = pst.executeQuery();
+
+			List<Order> list = new ArrayList<>();
+			Map<Integer, Client> map1 = new HashMap<>();
+			Map<Integer, Pizza> map2 = new HashMap<>();
+			Map<Integer, PizzaSize> map3 = new HashMap<>();
+			Map<Integer, Additional> map4 = new HashMap<>();
+			Map<Integer, OrderStatus> map5 = new HashMap<>();
+
+			while (rs.next()) {
+
+				Client client = map1.get(rs.getInt("client_id"));
+				Pizza pizza = map2.get(rs.getInt("pizza_id"));
+				PizzaSize pizzaSize = map3.get(rs.getInt("pizza_size_id"));
+				Additional additional = map4.get(rs.getInt("additional_id"));
+				OrderStatus orderStatus = map5.get(rs.getInt("order_status_id"));
+				if (client == null) {
+					client = instantiateClient(rs);
+					map1.put(rs.getInt("client_id"), client);
+				}
+				
+				if (pizza == null) {
+					pizza = instantiatePizza(rs);
+					map2.put(rs.getInt("pizza_id"), pizza);
+				}
+				
+				if (pizzaSize == null) {
+					pizzaSize = instantiatePizzaSize(rs);
+					map3.put(rs.getInt("pizza_size_id"), pizzaSize);
+				}
+				
+				if (additional == null) {
+					additional = instantiateAdditional(rs);
+					map4.put(rs.getInt("additional_id"), additional);
+				}
+				
+				if (orderStatus == null) {
+					orderStatus = instantiateOrderStatus(rs);
+					map5.put(rs.getInt("order_status_id"), orderStatus);
+				}
+
+				Order obj = instantiateOrder(rs, client, pizza, pizzaSize, additional, orderStatus);
+				list.add(obj);
+			}
+			return list;
+		} catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		} finally {
+			DB.closeStatement(pst);
+			DB.closeResultSet(rs);
+		}
 	}
 	
 	
