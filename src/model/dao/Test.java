@@ -2,10 +2,12 @@ package model.dao;
 
 import model.dao.jdbc.ClientDAO;
 import model.dao.jdbc.InventoryDAO;
+import model.dao.jdbc.OrderStatusDAO;
 import model.dao.jdbc.PizzaDAO;
 import model.dao.jdbc.PizzaSizeDAO;
 import model.vo.Client;
 import model.vo.Inventory;
+import model.vo.OrderStatus;
 import model.vo.Pizza;
 import model.vo.PizzaSize;
 
@@ -28,14 +30,14 @@ public class Test {
 		
 		// inventory
 		
-		PizzaSizeDAO daos = new PizzaSizeDAO();
+		OrderStatusDAO daos = new OrderStatusDAO();
 		
-		Pizza obj = new Pizza(null, "Mussarela", 20.0, daos.findById(1));
+		OrderStatus obj = new OrderStatus(null, "Status Teste");
 
 		PizzaDAO dao = new PizzaDAO();
 
-		dao.insert(obj);
-		// dao.deleteById(3);
+		//daos.insert(obj);
+		 daos.deleteById(4);
 //		dao.update(obj);
 
 //		for (Client x : dao.findAll()) {
