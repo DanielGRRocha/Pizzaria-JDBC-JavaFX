@@ -2,6 +2,7 @@ package gui;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -29,10 +30,19 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import model.bo.AdditionalBO;
+import model.bo.ClientBO;
+import model.bo.OrderBO;
+import model.bo.OrderStatusBO;
 import model.bo.PizzaBO;
 import model.bo.PizzaSizeBO;
+import model.vo.Additional;
+import model.vo.Client;
+import model.vo.Order;
+import model.vo.OrderStatus;
 import model.vo.Pizza;
 import model.vo.PizzaSize;
+
 
 
 
@@ -40,46 +50,58 @@ public class OrderListController implements Initializable, InterDataChangeListen
 
 	// services (dependência) (injetar dependência sem usar a implementação da
 	// classe. criar método)
-	private PizzaBO service;
+	private OrderBO service;
 
 	//
 
 	@FXML
-	private TableView<Pizza> tableViewPizza;
+	private TableView<Order> tableViewOrder;
 
 	@FXML
-	private TableColumn<Pizza, Integer> tableColumnId;
-
-	@FXML
-	private TableColumn<Pizza, String> tableColumnName;
+	private TableColumn<Order, Integer> tableColumnId;
 	
 	@FXML
-	private TableColumn<Pizza, Double> tableColumnPrice;
+	private TableColumn<Order, Client> tableColumnClient;
 	
 	@FXML
-	private TableColumn<Pizza, PizzaSize> tableColumnPizzaSize;
+	private TableColumn<Order, Pizza> tableColumnPizza;
 	
 	@FXML
-	private TableColumn<Pizza, Pizza> tableColumnEDIT;
+	private TableColumn<Order, PizzaSize> tableColumnPizzaSize;
 	
 	@FXML
-	private TableColumn<Pizza, Pizza> tableColumnREMOVE;
+	private TableColumn<Order, Additional> tableColumnAdditional;
+	
+	@FXML
+	private TableColumn<Order, OrderStatus> tableColumnOrderStatus;
+	
+	@FXML
+	private TableColumn<Order, Date> tableColumnMoment;
+	
+	@FXML
+	private TableColumn<Order, Double> tableColumnTotal;
+	
+	@FXML
+	private TableColumn<Order, Order> tableColumnEDIT;
+	
+	@FXML
+	private TableColumn<Order, Order> tableColumnREMOVE;
 
 	@FXML
 	private Button btNew;
 
-	private ObservableList<Pizza> obsList; //associoar com tableView
+	private ObservableList<Order> obsList; //associoar com tableView
 
 	// métodos
 	@FXML
 	public void onBtNewAction(ActionEvent event) {
 		Stage parentStage = Utils.currentStage(event);
-		Pizza obj = new Pizza();
-		createDialogForm(obj,"/gui/PizzaForm.fxml", parentStage);
+		Order obj = new Order();
+		createDialogForm(obj,"/gui/OrderForm.fxml", parentStage);
 	}
 
 	// inversão de controle
-	public void setPizzaBO(PizzaBO service) {
+	public void setOrderBO(OrderBO service) {
 		this.service = service;
 	}
 
@@ -91,15 +113,31 @@ public class OrderListController implements Initializable, InterDataChangeListen
 
 	private void initializeNodes() {
 		tableColumnId.setCellValueFactory(new PropertyValueFactory<>("id"));
-		tableColumnName.setCellValueFactory(new PropertyValueFactory<>("name"));
-		tableColumnPrice.setCellValueFactory(new PropertyValueFactory<>("price"));
-		Utils.formatTableColumnDouble(tableColumnPrice, 2);
+		
+		tableColumnClient.setCellValueFactory((new PropertyValueFactory<>("client")));
+		Utils.formatTableColumnSubProperty(tableColumnClient, client -> client.getName());
+		
+		tableColumnPizza.setCellValueFactory((new PropertyValueFactory<>("pizza")));
+		Utils.formatTableColumnSubProperty(tableColumnPizza, pizza -> pizza.getName());
+		
 		tableColumnPizzaSize.setCellValueFactory((new PropertyValueFactory<>("pizzaSize")));
 		Utils.formatTableColumnSubProperty(tableColumnPizzaSize, pizzaSize -> pizzaSize.getName());
+		
+		tableColumnAdditional.setCellValueFactory((new PropertyValueFactory<>("additional")));
+		Utils.formatTableColumnSubProperty(tableColumnAdditional, additional -> additional.getName());
+		
+		tableColumnOrderStatus.setCellValueFactory((new PropertyValueFactory<>("orderStatus")));
+		Utils.formatTableColumnSubProperty(tableColumnOrderStatus, orderStatus -> orderStatus.getName());
+		
+		tableColumnMoment.setCellValueFactory(new PropertyValueFactory<>("moment"));
+		Utils.formatTableColumnDate(tableColumnMoment, "dd/MM/yyyy");
+		
+		tableColumnTotal.setCellValueFactory(new PropertyValueFactory<>("total"));
+		Utils.formatTableColumnDouble(tableColumnTotal, 2);
 
 		// table ir até o final
 		Stage stage = (Stage) Main.getMainScene().getWindow();
-		tableViewPizza.prefHeightProperty().bind(stage.heightProperty());
+		tableViewOrder.prefHeightProperty().bind(stage.heightProperty());
 
 	}
 	
@@ -108,36 +146,34 @@ public class OrderListController implements Initializable, InterDataChangeListen
 		if(service == null) {
 			throw new IllegalStateException("Service was null");
 		}
-		List<Pizza> list = service.findAll();
+		List<Order> list = service.findAll();
 		obsList = FXCollections.observableArrayList(list);
-		tableViewPizza.setItems(obsList);
+		tableViewOrder.setItems(obsList);
 		initEditButtons();
 		initRemoveButtons();
 	}
 	
 	//janela Form (instanciar a janela de diálogo)
-	private void createDialogForm(Pizza obj, String absoluteName, Stage parentStage) {
+	private void createDialogForm(Order obj, String absoluteName, Stage parentStage) {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
 			Pane pane = loader.load();
 			
-			//injetar Client obj no controlador na tela de novo cadastro(formulário) ANOTAÇÃO: instanciando o FormController é possível chamar os seus métodos
-			PizzaFormController controller = loader.getController(); //pega-se o controlador da tela que foi carregada
-			controller.setPizza(obj); //injetar nesse controller o objeto
-			controller.setServices(new PizzaBO(), new PizzaSizeBO());//injetar BO (injeção de dependência)
+			OrderFormController controller = loader.getController();
+			controller.setOrder(obj);
+			controller.setServices(new OrderBO(), new ClientBO(), new PizzaBO(), new PizzaSizeBO(), new AdditionalBO(), new OrderStatusBO());
 			controller.loadAssociatedObjects();
-			controller.subscribeDataChangeListener(this);//inscrevendo um listener para receber o evento que chamará o método "onDataChanged"
+			controller.subscribeDataChangeListener(this);
 			
-			controller.updateFormData();//chamar o método que carrega o objeto no formulário
-			
+			controller.updateFormData();
 			
 			//instanciar novo stage (stage sobre stage)
 			Stage dialogStage = new Stage();
-			dialogStage.setTitle("Nova pizza");
+			dialogStage.setTitle("Novo pedido");
 			dialogStage.setScene(new Scene(pane));
 			dialogStage.setResizable(false);
 			dialogStage.initOwner(parentStage);
-			dialogStage.initModality(Modality.WINDOW_MODAL); //não pode acessar a janela de trás enquanto esta estiver aberta
+			dialogStage.initModality(Modality.WINDOW_MODAL);
 			dialogStage.showAndWait();
 			
 		}
@@ -157,11 +193,11 @@ public class OrderListController implements Initializable, InterDataChangeListen
 	
 	private void initEditButtons() {
 		tableColumnEDIT.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
-		tableColumnEDIT.setCellFactory(param -> new TableCell<Pizza, Pizza>() {
-			private final Button button = new Button("ver");
+		tableColumnEDIT.setCellFactory(param -> new TableCell<Order, Order>() {
+			private final Button button = new Button("editar");
 
 			@Override
-			protected void updateItem(Pizza obj, boolean empty) {
+			protected void updateItem(Order obj, boolean empty) {
 				super.updateItem(obj, empty);
 				if (obj == null) {
 					setGraphic(null);
@@ -169,7 +205,7 @@ public class OrderListController implements Initializable, InterDataChangeListen
 				}
 				setGraphic(button);
 				button.setOnAction(
-						event -> createDialogForm(obj, "/gui/PizzaForm.fxml", Utils.currentStage(event)));
+						event -> createDialogForm(obj, "/gui/OrderForm.fxml", Utils.currentStage(event)));
 			}
 		});
 	}
@@ -178,11 +214,11 @@ public class OrderListController implements Initializable, InterDataChangeListen
 	
 	private void initRemoveButtons() {
 		tableColumnREMOVE.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
-		tableColumnREMOVE.setCellFactory(param -> new TableCell<Pizza, Pizza>() {
+		tableColumnREMOVE.setCellFactory(param -> new TableCell<Order, Order>() {
 			private final Button button = new Button("remover");
 
 			@Override
-			protected void updateItem(Pizza obj, boolean empty) {
+			protected void updateItem(Order obj, boolean empty) {
 				super.updateItem(obj, empty);
 				if (obj == null) {
 					setGraphic(null);
@@ -194,7 +230,7 @@ public class OrderListController implements Initializable, InterDataChangeListen
 		});
 	}
 
-	private void removeEntity(Pizza obj) {
+	private void removeEntity(Order obj) {
 		Optional<ButtonType> result = Alerts.showConfirmation("Confirmation", "Are you sure to delete?");
 		
 		if(result.get() == ButtonType.OK) {

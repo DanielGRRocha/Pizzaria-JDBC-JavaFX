@@ -239,7 +239,7 @@ public class OrderDAO extends BaseDAO implements InterOrderDAO<Order> {
 				+ " INNER JOIN  tb_pizza_size ON (tb_order.pizza_size_id = tb_pizza_size.Id)"
 				+ " INNER JOIN tb_additional ON (tb_order.additional_id = tb_additional.Id)"
 				+ " INNER JOIN tb_order_status ON (tb_order.order_status_id = tb_order_status.Id)"
-				+ " WHERE client_id = ? ORDER BY id ASC";
+				+ " WHERE client_id = ? ORDER BY Name";
 
 		PreparedStatement pst = null;
 		ResultSet rs = null;

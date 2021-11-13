@@ -76,13 +76,13 @@ public class MainViewController implements Initializable {
 		});
 	}
 	
-//	@FXML
-//	public void onMenuItemOrderAction() {
-//		loadView("/gui/OrderList.fxml", (OrderListController controller) -> {
-//			controller.setOrderBO(new OrderBO());
-//			controller.updateTableView();
-//		});
-//	}
+	@FXML
+	public void onMenuItemOrderAction() {
+		loadView("/gui/OrderList.fxml", (OrderListController controller) -> {
+			controller.setOrderBO(new OrderBO());
+			controller.updateTableView();
+		});
+	}
 	
 	@FXML
 	public void onMenuItemAboutAction() {
