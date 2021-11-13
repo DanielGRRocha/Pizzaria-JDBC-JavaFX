@@ -3,6 +3,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -11,7 +12,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<AnchorPane prefHeight="494.0" prefWidth="486.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.PizzaFormController">
+<AnchorPane prefHeight="542.0" prefWidth="486.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.OrderFormController">
    <children>
       <GridPane layoutX="35.0" layoutY="41.0" prefHeight="442.0" prefWidth="442.0" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="41.0">
         <columnConstraints>
@@ -27,23 +28,20 @@
             <RowConstraints maxHeight="56.0" minHeight="4.0" prefHeight="46.0" vgrow="SOMETIMES" />
             <RowConstraints maxHeight="56.0" minHeight="10.0" prefHeight="46.0" vgrow="SOMETIMES" />
           <RowConstraints maxHeight="87.0" minHeight="0.0" prefHeight="50.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="87.0" minHeight="10.0" prefHeight="50.0" vgrow="SOMETIMES" />
+            <RowConstraints maxHeight="87.0" minHeight="10.0" prefHeight="50.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
             <Label text="Id" />
-            <Label text="Nome" GridPane.rowIndex="1" />
-            <Label text="Tamanho" GridPane.rowIndex="2" />
+            <Label text="Cliente" GridPane.rowIndex="1" />
+            <Label text="Pizza" GridPane.rowIndex="2" />
             <TextField fx:id="textFieldId" editable="false" maxWidth="50.0" minWidth="50.0" prefHeight="25.0" prefWidth="100.0" GridPane.columnIndex="1" />
-            <TextField fx:id="textFieldName" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <Label fx:id="labelErrorName" textFill="#fc1f1f" GridPane.columnIndex="2" GridPane.rowIndex="1">
-               <padding>
-                  <Insets left="5.0" />
-               </padding></Label>
-            <Label fx:id="labelErrorPrice" textFill="#fc1f1f" GridPane.columnIndex="2" GridPane.rowIndex="3">
+            <Label fx:id="labelErrorMoment" textFill="#fc1f1f" GridPane.columnIndex="2" GridPane.rowIndex="6">
                <padding>
                   <Insets left="5.0" />
                </padding>
             </Label>
-            <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="6">
+            <HBox prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="8">
                <children>
                   <Button fx:id="btSave" mnemonicParsing="false" onAction="#onBtSaveAction" prefWidth="110.0" text="Salvar" />
                   <Button fx:id="btCancel" mnemonicParsing="false" onAction="#onBtCancelAction" prefWidth="110.0" text="Cancelar" />
@@ -52,9 +50,18 @@
                   <Insets top="20.0" />
                </padding>
             </HBox>
-            <TextField fx:id="textFieldPrice" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-            <Label text="Preço" GridPane.rowIndex="3" />
-            <ComboBox fx:id="comboBoxPizzaSize" prefHeight="25.0" prefWidth="230.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <Label text="Tamanho" GridPane.rowIndex="3" />
+            <ComboBox fx:id="comboBoxPizza" prefHeight="25.0" prefWidth="230.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <ComboBox fx:id="comboBoxClient" prefHeight="25.0" prefWidth="230.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <ComboBox fx:id="comboBoxPizzaSize" prefHeight="25.0" prefWidth="230.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+            <Label layoutX="10.0" layoutY="126.0" text="Adicional" GridPane.rowIndex="4" />
+            <ComboBox fx:id="comboBoxAdditional" prefHeight="25.0" prefWidth="230.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+            <Label text="Status" GridPane.rowIndex="5" />
+            <ComboBox fx:id="comboBoxOrderStatus" prefHeight="25.0" prefWidth="230.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+            <Label text="Data" GridPane.rowIndex="6" />
+            <DatePicker fx:id="dpMoment" prefHeight="25.0" prefWidth="234.0" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+            <Label text="Total" GridPane.rowIndex="7" />
+            <TextField fx:id="textFieldTotal" editable="false" maxWidth="235.0" minWidth="50.0" prefHeight="25.0" prefWidth="235.0" GridPane.columnIndex="1" GridPane.rowIndex="7" />
          </children>
       </GridPane>
    </children>

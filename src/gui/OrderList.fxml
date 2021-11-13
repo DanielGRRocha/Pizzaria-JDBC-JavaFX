@@ -9,9 +9,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox prefHeight="633.0" prefWidth="830.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.PizzaListController">
+<VBox prefHeight="633.0" prefWidth="1203.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.OrderListController">
    <children>
-      <Label text="Registro Pizza">
+      <Label text="Pedidos">
          <font>
             <Font name="System Bold" size="14.0" />
          </font>
@@ -24,12 +24,16 @@
           <Button fx:id="btNew" mnemonicParsing="false" onAction="#onBtNewAction" text="Novo" />
         </items>
       </ToolBar>
-      <TableView fx:id="tableViewPizza" prefHeight="200.0" prefWidth="200.0">
+      <TableView fx:id="tableViewOrder" prefHeight="200.0" prefWidth="200.0">
         <columns>
             <TableColumn fx:id="tableColumnId" prefWidth="45.0" text="Id" />
-            <TableColumn fx:id="tableColumnName" prefWidth="266.0" text="Sabor" />
-            <TableColumn fx:id="tableColumnPrice" prefWidth="266.0" text="Preço" />
-            <TableColumn fx:id="tableColumnPizzaSize" prefWidth="75.0" text="Tamanho" />
+            <TableColumn fx:id="tableColumnClient" prefWidth="266.0" text="Cliente" />
+            <TableColumn fx:id="tableColumnPizza" prefWidth="123.0" text="Sabor" />
+            <TableColumn fx:id="tableColumnPizzaSize" prefWidth="123.0" text="Tamanho" />
+            <TableColumn fx:id="tableColumnAdditional" prefWidth="123.0" text="Adicional" />
+            <TableColumn fx:id="tableColumnOrderStatus" prefWidth="123.0" text="Status" />
+            <TableColumn fx:id="tableColumnMoment" prefWidth="123.0" text="Data" />
+            <TableColumn fx:id="tableColumnTotal" prefWidth="123.0" text="Total" />
             <TableColumn fx:id="tableColumnEDIT" prefWidth="75.0" />
             <TableColumn fx:id="tableColumnREMOVE" prefWidth="75.0" />
         </columns>
