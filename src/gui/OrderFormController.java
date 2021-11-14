@@ -2,6 +2,7 @@ package gui;
 
 import java.net.URL;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
@@ -121,6 +122,13 @@ public class OrderFormController implements Initializable {//classe Sujeito (emi
 		dataChangeListeners.add(listener);
 	}
 	
+	private void notifyDataChangeListeners() {
+		for (InterDataChangeListener listener : dataChangeListeners) {
+			listener.onDataChanged();
+		}
+		
+	}
+	
 	public void loadAssociatedObjects() {
 		//client
 		if (clientService == null) {
@@ -190,6 +198,12 @@ public class OrderFormController implements Initializable {//classe Sujeito (emi
 		}
 	}
 	
+	@FXML
+	public void onBtCancelAction(ActionEvent event) {
+		
+		Utils.currentStage(event).close();//fechar janela após apertar
+	}
+	
 	
 	private Order getFormData() {
 		Order obj = new Order();
@@ -223,10 +237,6 @@ public class OrderFormController implements Initializable {//classe Sujeito (emi
 			obj.setMoment(Date.from(instant));
 		}
 		
-		//Total
-		if(textFieldTotal.getText() == null || textFieldTotal.getText().trim().equals("")) {
-			exception.addError("total", "Field can't be empty");
-		}
 		obj.setTotal(Utils.tryParseToDouble(textFieldTotal.getText()));
 		
 		//erros
@@ -237,19 +247,6 @@ public class OrderFormController implements Initializable {//classe Sujeito (emi
 		return obj;
 	}
 	
-	private void notifyDataChangeListeners() {
-		for (InterDataChangeListener listener : dataChangeListeners) {
-			listener.onDataChanged();
-		}
-		
-	}
-	
-
-	@FXML
-	public void onBtCancelAction(ActionEvent event) {
-		
-		Utils.currentStage(event).close();//fechar janela após apertar
-	}
 
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
@@ -314,6 +311,11 @@ public class OrderFormController implements Initializable {//classe Sujeito (emi
 			comboBoxOrderStatus.getSelectionModel().selectFirst();
 		} else {
 			comboBoxOrderStatus.setValue(entity.getOrderStatus());
+		}
+		
+		//moment
+		if(entity.getMoment() != null) {
+			dpMoment.setValue(LocalDate.ofInstant(entity.getMoment().toInstant(), ZoneId.systemDefault()));
 		}
 		
 	}
