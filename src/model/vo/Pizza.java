@@ -8,18 +8,19 @@ public class Pizza implements Serializable {
 	
 	private Integer id;
 	private String name;
-	private Double price;
-	
-	private PizzaSize pizzaSize;
+	private Double priceSmallPizza;
+	private Double priceMediumPizza;
+	private Double priceBigPizza;
 	
 	public Pizza() {
 	}
 
-	public Pizza(Integer id, String name, Double price, PizzaSize pizzaSize) {
+	public Pizza(Integer id, String name, Double priceSmallPizza, Double priceMediumPizza, Double priceBigPizza) {
 		this.id = id;
 		this.name = name;
-		this.price = price;
-		this.pizzaSize = pizzaSize;
+		this.priceSmallPizza = priceSmallPizza;
+		this.priceMediumPizza = priceMediumPizza;
+		this.priceBigPizza = priceBigPizza;
 	}
 
 	public Integer getId() {
@@ -38,22 +39,29 @@ public class Pizza implements Serializable {
 		this.name = name;
 	}
 
-	public Double getPrice() {
-		return price;
+	public Double getPriceSmallPizza() {
+		return priceSmallPizza;
 	}
 
-	public void setPrice(Double price) {
-		this.price = price;
+	public void setPriceSmallPizza(Double priceSmallPizza) {
+		this.priceSmallPizza = priceSmallPizza;
 	}
 
-	public PizzaSize getPizzaSize() {
-		return pizzaSize;
+	public Double getPriceMediumPizza() {
+		return priceMediumPizza;
 	}
 
-	public void setPizzaSize(PizzaSize pizzaSize) {
-		this.pizzaSize = pizzaSize;
+	public void setPriceMediumPizza(Double priceMediumPizza) {
+		this.priceMediumPizza = priceMediumPizza;
 	}
-	
+
+	public Double getPriceBigPizza() {
+		return priceBigPizza;
+	}
+
+	public void setPriceBigPizza(Double priceBigPizza) {
+		this.priceBigPizza = priceBigPizza;
+	}
 
 	@Override
 	public int hashCode() {

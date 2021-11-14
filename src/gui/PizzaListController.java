@@ -30,10 +30,7 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.bo.PizzaBO;
-import model.bo.PizzaSizeBO;
 import model.vo.Pizza;
-import model.vo.PizzaSize;
-
 
 
 public class PizzaListController implements Initializable, InterDataChangeListener { //o objeto desta classe é Observer (espera emissão de sinal das outras opara executar um determinado método)
@@ -54,10 +51,13 @@ public class PizzaListController implements Initializable, InterDataChangeListen
 	private TableColumn<Pizza, String> tableColumnName;
 	
 	@FXML
-	private TableColumn<Pizza, Double> tableColumnPrice;
+	private TableColumn<Pizza, Double> tableColumnPriceSmallPizza;
 	
 	@FXML
-	private TableColumn<Pizza, PizzaSize> tableColumnPizzaSize;
+	private TableColumn<Pizza, Double> tableColumnPriceMediumPizza;
+	
+	@FXML
+	private TableColumn<Pizza, Double> tableColumnPriceBigPizza;
 	
 	@FXML
 	private TableColumn<Pizza, Pizza> tableColumnEDIT;
@@ -92,10 +92,12 @@ public class PizzaListController implements Initializable, InterDataChangeListen
 	private void initializeNodes() {
 		tableColumnId.setCellValueFactory(new PropertyValueFactory<>("id"));
 		tableColumnName.setCellValueFactory(new PropertyValueFactory<>("name"));
-		tableColumnPrice.setCellValueFactory(new PropertyValueFactory<>("price"));
-		Utils.formatTableColumnDouble(tableColumnPrice, 2);
-		tableColumnPizzaSize.setCellValueFactory((new PropertyValueFactory<>("pizzaSize")));
-		Utils.formatTableColumnSubProperty(tableColumnPizzaSize, pizzaSize -> pizzaSize.getName());
+		tableColumnPriceSmallPizza.setCellValueFactory(new PropertyValueFactory<>("priceSmallPizza"));
+		Utils.formatTableColumnDouble(tableColumnPriceSmallPizza, 2);
+		tableColumnPriceMediumPizza.setCellValueFactory(new PropertyValueFactory<>("priceMediumPizza"));
+		Utils.formatTableColumnDouble(tableColumnPriceMediumPizza, 2);
+		tableColumnPriceBigPizza.setCellValueFactory(new PropertyValueFactory<>("priceBigPizza"));
+		Utils.formatTableColumnDouble(tableColumnPriceBigPizza, 2);
 
 		// table ir até o final
 		Stage stage = (Stage) Main.getMainScene().getWindow();
@@ -124,8 +126,7 @@ public class PizzaListController implements Initializable, InterDataChangeListen
 			//injetar Client obj no controlador na tela de novo cadastro(formulário) ANOTAÇÃO: instanciando o FormController é possível chamar os seus métodos
 			PizzaFormController controller = loader.getController(); //pega-se o controlador da tela que foi carregada
 			controller.setPizza(obj); //injetar nesse controller o objeto
-			controller.setServices(new PizzaBO(), new PizzaSizeBO());//injetar BO (injeção de dependência)
-			controller.loadAssociatedObjects();
+			controller.setService(new PizzaBO());//injetar BO (injeção de dependência)
 			controller.subscribeDataChangeListener(this);//inscrevendo um listener para receber o evento que chamará o método "onDataChanged"
 			
 			controller.updateFormData();//chamar o método que carrega o objeto no formulário
@@ -158,7 +159,7 @@ public class PizzaListController implements Initializable, InterDataChangeListen
 	private void initEditButtons() {
 		tableColumnEDIT.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
 		tableColumnEDIT.setCellFactory(param -> new TableCell<Pizza, Pizza>() {
-			private final Button button = new Button("ver");
+			private final Button button = new Button("editar");
 
 			@Override
 			protected void updateItem(Pizza obj, boolean empty) {

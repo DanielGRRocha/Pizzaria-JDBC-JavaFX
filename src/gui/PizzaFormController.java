@@ -13,22 +13,16 @@ import gui.listeners.InterDataChangeListener;
 import gui.util.Alerts;
 import gui.util.Constraints;
 import gui.util.Utils;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import model.bo.PizzaBO;
-import model.bo.PizzaSizeBO;
 import model.exceptions.ValidationException;
 import model.vo.Pizza;
-import model.vo.PizzaSize;
-
 
 
 
@@ -38,7 +32,6 @@ public class PizzaFormController implements Initializable {//classe Sujeito (emi
 	//criar a dependência (ak instanciar criando um set)
 	private Pizza entity;
 	private PizzaBO service;
-	private PizzaSizeBO pizzaSizeService;
 	//a classe em questão vai guardar uma lista de objetos interessados em receber o evento (criar método para adicioná-los na lista)
 	private List<InterDataChangeListener> dataChangeListeners = new ArrayList<>(); 
 	
@@ -51,19 +44,26 @@ public class PizzaFormController implements Initializable {//classe Sujeito (emi
 	private TextField textFieldName;
 	
 	@FXML
-	private TextField textFieldPrice;
+	private TextField textFieldPriceSmallPizza;
 	
 	@FXML
-	private ComboBox<PizzaSize> comboBoxPizzaSize;
+	private TextField textFieldPriceMediumPizza;
 	
-	ObservableList<PizzaSize> obsList;
+	@FXML
+	private TextField textFieldPriceBigPizza;
 
 	
 	@FXML
 	private Label labelErrorName;
 	
 	@FXML
-	private Label labelErrorPrice;
+	private Label labelErrorPriceSmallPizza;
+	
+	@FXML
+	private Label labelErrorPriceMediumPizza;
+	
+	@FXML
+	private Label labelErrorPriceBigPizza;
 	
 	
 	@FXML
@@ -77,23 +77,12 @@ public class PizzaFormController implements Initializable {//classe Sujeito (emi
 		this.entity = entity;
 	}
 	//set InventoryBO (agora controlador tem instância da classe de serviços do Inventory)
-	public void setServices(PizzaBO service, PizzaSizeBO pizzaSizeService) {
+	public void setService(PizzaBO service) {
 		this.service = service;
-		this.pizzaSizeService = pizzaSizeService;
 	}
 	//método para adicionar objetos na lista "dataChangeListeners"
 	public void subscribeDataChangeListener(InterDataChangeListener listener) {//objetos que implementarem a interface "DataChangeListener" podem se inscrever para receber o evento da classe
 		dataChangeListeners.add(listener);
-	}
-	
-	//método para associar objetos da lista ao comboBox (botar o método no SellerListController) // método que inicializa o comboBox lá em baixo
-	public void loadAssociatedObjects() {
-		if (pizzaSizeService == null) {
-			throw new IllegalStateException("PizzaSizeBO was null");
-		}
-		List<PizzaSize> list = pizzaSizeService.findAll();
-		obsList = FXCollections.observableArrayList(list);
-		comboBoxPizzaSize.setItems(obsList);
 	}
 	
 	
@@ -138,15 +127,24 @@ public class PizzaFormController implements Initializable {//classe Sujeito (emi
 		}
 		obj.setName(textFieldName.getText());
 		
-		//price
-		if(textFieldPrice.getText() == null || textFieldPrice.getText().trim().equals("")) {
-			exception.addError("price", "Field can't be empty");
+		//priceSmallPizza
+		if(textFieldPriceSmallPizza.getText() == null || textFieldPriceSmallPizza.getText().trim().equals("")) {
+			exception.addError("priceSmallPizza", "Field can't be empty");
 		}
-		obj.setPrice(Utils.tryParseToDouble(textFieldPrice.getText()));
+		obj.setPriceSmallPizza(Utils.tryParseToDouble(textFieldPriceSmallPizza.getText()));
 		
-		//PizzaSize
-		obj.setPizzaSize(comboBoxPizzaSize.getValue());
+		//priceMediumPizza
+		if (textFieldPriceMediumPizza.getText() == null || textFieldPriceMediumPizza.getText().trim().equals("")) {
+			exception.addError("priceMediumPizza", "Field can't be empty");
+		}
+		obj.setPriceMediumPizza(Utils.tryParseToDouble(textFieldPriceMediumPizza.getText()));
 		
+		//priceBigPizza
+		if (textFieldPriceBigPizza.getText() == null || textFieldPriceBigPizza.getText().trim().equals("")) {
+			exception.addError("priceBigPizza", "Field can't be empty");
+		}
+		obj.setPriceBigPizza(Utils.tryParseToDouble(textFieldPriceBigPizza.getText()));
+
 		//erros
 		if(exception.getErrors().size() > 0) {
 			throw exception;
@@ -180,10 +178,9 @@ public class PizzaFormController implements Initializable {//classe Sujeito (emi
 	private void initializeNodes() {
 		Constraints.setTextFieldInteger(textFieldId);
 		Constraints.setTextFieldMaxLength(textFieldName, 60);
-		Constraints.setTextFieldDouble(textFieldPrice);
-		
-//		initializeComboBoxPizzaSize(); //chamar no "updateFormData"
-		Utils.formatComboBox(comboBoxPizzaSize, pizzaSize -> pizzaSize.getName());
+		Constraints.setTextFieldDouble(textFieldPriceSmallPizza);
+		Constraints.setTextFieldDouble(textFieldPriceMediumPizza);
+		Constraints.setTextFieldDouble(textFieldPriceBigPizza);
 		
 	}
 	
@@ -197,13 +194,9 @@ public class PizzaFormController implements Initializable {//classe Sujeito (emi
 		textFieldId.setText(String.valueOf(entity.getId())); //converte Interger em String
 		textFieldName.setText(entity.getName());
 		Locale.setDefault(Locale.US);
-		textFieldPrice.setText(String.format("%.2f", entity.getPrice()));
-		
-		if(entity.getPizzaSize() == null) {
-			comboBoxPizzaSize.getSelectionModel().selectFirst();
-		} else {
-			comboBoxPizzaSize.setValue(entity.getPizzaSize());
-		}
+		textFieldPriceSmallPizza.setText(String.format("%.2f", entity.getPriceSmallPizza()));
+		textFieldPriceMediumPizza.setText(String.format("%.2f", entity.getPriceMediumPizza()));
+		textFieldPriceBigPizza.setText(String.format("%.2f", entity.getPriceBigPizza()));
 		
 		
 	}
@@ -213,11 +206,11 @@ public class PizzaFormController implements Initializable {//classe Sujeito (emi
 		Set<String> fields = errors.keySet();
 		
 		labelErrorName.setText((fields.contains("name") ? errors.get("name") : ""));
-		labelErrorPrice.setText((fields.contains("price") ? errors.get("price") : ""));
+		labelErrorPriceSmallPizza.setText((fields.contains("priceSmallPizza") ? errors.get("priceSmallPizza") : ""));
+		labelErrorPriceMediumPizza.setText((fields.contains("priceMediumPizza") ? errors.get("priceMediumPizza") : ""));
+		labelErrorPriceBigPizza.setText((fields.contains("priceBigPizza") ? errors.get("priceBigPizza") : ""));
 		
 	}
-	
-
 	
 
 }//class

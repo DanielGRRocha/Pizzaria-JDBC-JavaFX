@@ -5,22 +5,19 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import db.DB;
 import db.DbException;
 import model.dao.BaseDAO;
 import model.dao.InterDAO;
 import model.vo.Pizza;
-import model.vo.PizzaSize;
 
 public class PizzaDAO extends BaseDAO implements InterDAO<Pizza> {
 
 	@Override
 	public void insert(Pizza obj) {
-		String SQL = "INSERT INTO tb_pizza (name, price, pizza_size_id) VALUES (?,?,?)";
+		String SQL = "INSERT INTO tb_pizza (name, price_small_pizza, price_medium_pizza, price_big_pizza) VALUES (?,?,?,?)";
 
 		PreparedStatement pst = null;
 
@@ -28,8 +25,9 @@ public class PizzaDAO extends BaseDAO implements InterDAO<Pizza> {
 			pst = getConnection().prepareStatement(SQL, Statement.RETURN_GENERATED_KEYS);
 
 			pst.setString(1, obj.getName());
-			pst.setDouble(2, obj.getPrice());
-			pst.setInt(3, obj.getPizzaSize().getId());
+			pst.setDouble(2, obj.getPriceSmallPizza());
+			pst.setDouble(3, obj.getPriceMediumPizza());
+			pst.setDouble(4, obj.getPriceBigPizza());
 
 			int rowsAffected = pst.executeUpdate();
 
@@ -54,7 +52,7 @@ public class PizzaDAO extends BaseDAO implements InterDAO<Pizza> {
 
 	@Override
 	public void update(Pizza obj) {
-		String SQL = "UPDATE tb_pizza SET name = ?, price = ?, pizza_size_id = ? WHERE id = ?";
+		String SQL = "UPDATE tb_pizza SET name = ?, price_small_pizza = ?, price_medium_pizza = ?, price_big_pizza = ? WHERE id = ?";
 
 		PreparedStatement pst = null;
 
@@ -62,10 +60,11 @@ public class PizzaDAO extends BaseDAO implements InterDAO<Pizza> {
 			pst = getConnection().prepareStatement(SQL, Statement.RETURN_GENERATED_KEYS);
 
 			pst.setString(1, obj.getName());
-			pst.setDouble(2, obj.getPrice());
-			pst.setInt(3, obj.getPizzaSize().getId());
+			pst.setDouble(2, obj.getPriceSmallPizza());
+			pst.setDouble(3, obj.getPriceMediumPizza());
+			pst.setDouble(4, obj.getPriceBigPizza());
 
-			pst.setInt(4, obj.getId());
+			pst.setInt(5, obj.getId());
 
 			pst.executeUpdate();
 
@@ -99,21 +98,25 @@ public class PizzaDAO extends BaseDAO implements InterDAO<Pizza> {
 
 	@Override
 	public Pizza findById(Integer id) {
-		String SQL = "SELECT tb_pizza.*,tb_pizza_size.Name as SizeName FROM tb_pizza"
-				+ " INNER JOIN tb_pizza_size ON tb_pizza.pizza_size_id = tb_pizza_size.Id" + " WHERE tb_pizza.Id = ?";
+		String SQL = "SELECT * FROM tb_pizza WHERE id = ?";
 
 		PreparedStatement pst = null;
 		ResultSet rs = null;
 		try {
+
 			pst = getConnection().prepareStatement(SQL);
 
 			pst.setInt(1, id);
+
 			rs = pst.executeQuery();
-
 			if (rs.next()) {
-				PizzaSize pizzaSize = instantiatePizzaSize(rs);
+				Pizza obj = new Pizza();
+				obj.setId(rs.getInt("id"));
+				obj.setName(rs.getString("name"));
+				obj.setPriceSmallPizza(rs.getDouble("price_small_pizza"));
+				obj.setPriceMediumPizza(rs.getDouble("price_medium_pizza"));
+				obj.setPriceBigPizza(rs.getDouble("price_big_pizza"));
 
-				Pizza obj = instantiatePizza(rs, pizzaSize);
 				return obj;
 			}
 			return null;
@@ -127,8 +130,7 @@ public class PizzaDAO extends BaseDAO implements InterDAO<Pizza> {
 
 	@Override
 	public List<Pizza> findAll() {
-		String SQL = "SELECT tb_pizza.*,tb_pizza_size.Name as SizeName FROM tb_pizza"
-				+ " INNER JOIN tb_pizza_size ON tb_pizza.pizza_size_id = tb_pizza_size.Id order by id asc";
+		String SQL = "SELECT * FROM tb_pizza";
 
 		PreparedStatement pst = null;
 		ResultSet rs = null;
@@ -138,19 +140,15 @@ public class PizzaDAO extends BaseDAO implements InterDAO<Pizza> {
 			rs = pst.executeQuery();
 
 			List<Pizza> list = new ArrayList<>();
-			Map<Integer, PizzaSize> map = new HashMap<>();
 
 			while (rs.next()) {
+				Pizza obj = new Pizza();
+				obj.setId(rs.getInt("id"));
+				obj.setName(rs.getString("name"));
+				obj.setPriceSmallPizza(rs.getDouble("price_small_pizza"));
+				obj.setPriceMediumPizza(rs.getDouble("price_medium_pizza"));
+				obj.setPriceBigPizza(rs.getDouble("price_big_pizza"));
 
-				// verificar se o tamanho já existe
-
-				PizzaSize pizzaSize = map.get(rs.getInt("pizza_size_id"));
-				if (pizzaSize == null) {
-					pizzaSize = instantiatePizzaSize(rs);
-					map.put(rs.getInt("pizza_size_id"), pizzaSize);
-				}
-
-				Pizza obj = instantiatePizza(rs, pizzaSize);
 				list.add(obj);
 			}
 			return list;
@@ -160,63 +158,6 @@ public class PizzaDAO extends BaseDAO implements InterDAO<Pizza> {
 			DB.closeStatement(pst);
 			DB.closeResultSet(rs);
 		}
-	}
-
-	public List<Pizza> findByPizzaSize(PizzaSize size) {
-
-		String SQL = "SELECT tb_pizza.*,tb_pizza_size.Name as SizeName FROM tb_pizza"
-				+ " INNER JOIN tb_pizza_size ON tb_pizza.pizza_size_id = tb_pizza_size.Id"
-				+ " WHERE pizza_size_id = ? ORDER BY Name";
-
-		PreparedStatement pst = null;
-		ResultSet rs = null;
-		try {
-			pst = getConnection().prepareStatement(SQL);
-
-			pst.setInt(1, size.getId());
-			rs = pst.executeQuery();
-
-
-			List<Pizza> list = new ArrayList<>();
-			Map<Integer, PizzaSize> map = new HashMap<>();
-
-			while (rs.next()) {
-
-				// verificar se já existe
-
-				PizzaSize pizzaSize = map.get(rs.getInt("pizza_size_id"));
-				if (pizzaSize == null) {
-					pizzaSize = instantiatePizzaSize(rs);
-					map.put(rs.getInt("pizza_size_id"), pizzaSize);
-				}
-
-				Pizza obj = instantiatePizza(rs, pizzaSize);
-				list.add(obj);
-			}
-			return list;
-		} catch (SQLException e) {
-			throw new DbException(e.getMessage());
-		} finally {
-			DB.closeStatement(pst);
-			DB.closeResultSet(rs);
-		}
-	}// metodo
-
-	private Pizza instantiatePizza(ResultSet rs, PizzaSize pizzaSize) throws SQLException {
-		Pizza obj = new Pizza();
-		obj.setId(rs.getInt("id"));
-		obj.setName(rs.getString("name"));
-		obj.setPrice(rs.getDouble("price"));
-		obj.setPizzaSize(pizzaSize);
-
-		return obj;
-	}
-
-	private PizzaSize instantiatePizzaSize(ResultSet rs) throws SQLException {
-		PizzaSize pizzaSize = new PizzaSize();
-		pizzaSize.setId(rs.getInt("pizza_size_id"));
-		pizzaSize.setName(rs.getString("SizeName"));
-		return pizzaSize;
 	}
 
 }
