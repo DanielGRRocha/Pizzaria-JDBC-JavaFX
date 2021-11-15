@@ -61,7 +61,7 @@
             <Label text="Data" GridPane.rowIndex="6" />
             <DatePicker fx:id="dpMoment" prefHeight="25.0" prefWidth="234.0" GridPane.columnIndex="1" GridPane.rowIndex="6" />
             <Label text="Total" GridPane.rowIndex="7" />
-            <TextField fx:id="textFieldTotal" editable="false" maxWidth="235.0" minWidth="50.0" prefHeight="25.0" prefWidth="235.0" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+            <TextField fx:id="textFieldTotal" maxWidth="235.0" minWidth="50.0" prefHeight="25.0" prefWidth="235.0" GridPane.columnIndex="1" GridPane.rowIndex="7" />
          </children>
       </GridPane>
    </children>

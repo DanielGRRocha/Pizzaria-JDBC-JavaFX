@@ -12,6 +12,9 @@ public class Pizza implements Serializable {
 	private Double priceMediumPizza;
 	private Double priceBigPizza;
 	
+	@SuppressWarnings("unused")
+	private Double price;
+	
 	public Pizza() {
 	}
 
@@ -79,5 +82,22 @@ public class Pizza implements Serializable {
 		Pizza other = (Pizza) obj;
 		return Objects.equals(id, other.id);
 	}
-	
+
+	public Double getPrice(Integer pizzaSize) {
+		if(pizzaSize == 1) {
+			return getPriceSmallPizza();
+		} else if (pizzaSize == 2) {
+			return getPriceMediumPizza();
+		} else if (pizzaSize == 3) {
+			return getPriceBigPizza();
+		} else {
+			return 0.0;
+		}
+		
+	}
+
+	public void setPrice(Double price) {
+		this.price = price;
+	}
+
 }

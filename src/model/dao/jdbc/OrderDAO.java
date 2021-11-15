@@ -37,7 +37,7 @@ public class OrderDAO extends BaseDAO implements InterOrderDAO<Order> {
 			pst.setInt(4, obj.getAdditional().getId());
 			pst.setInt(5, obj.getOrderStatus().getId());
 			pst.setDate(6, new java.sql.Date(obj.getMoment().getTime()));
-			pst.setDouble(7, obj.getPizza().getPrice() + obj.getAdditional().getPrice());
+			pst.setDouble(7, obj.getAdditional().getPrice() + obj.getPizza().getPrice(obj.getPizzaSize().getId()));
 
 			int rowsAffected = pst.executeUpdate();
 
@@ -62,7 +62,7 @@ public class OrderDAO extends BaseDAO implements InterOrderDAO<Order> {
 
 	@Override
 	public void update(Order obj) {
-		String SQL = "UPDATE tb_order SET client_id = ?, pizza_id = ?, pizza_size_id = ?, additional_id = ?, order_status_id = ?, moment = ? WHERE id = ?";
+		String SQL = "UPDATE tb_order SET client_id = ?, pizza_id = ?, pizza_size_id = ?, additional_id = ?, order_status_id = ?, moment = ?, total = ? WHERE id = ?";
 
 		PreparedStatement pst = null;
 
@@ -75,8 +75,10 @@ public class OrderDAO extends BaseDAO implements InterOrderDAO<Order> {
 			pst.setInt(4, obj.getAdditional().getId());
 			pst.setInt(5, obj.getOrderStatus().getId());
 			pst.setDate(6, new java.sql.Date(obj.getMoment().getTime()));
+			pst.setDouble(7, obj.getAdditional().getPrice() + obj.getPizza().getPrice(obj.getPizzaSize().getId()));
+			
 
-			pst.setInt(7, obj.getId());
+			pst.setInt(8, obj.getId());
 
 			pst.executeUpdate();
 
@@ -165,7 +167,7 @@ public class OrderDAO extends BaseDAO implements InterOrderDAO<Order> {
 				+ " INNER JOIN tb_pizza ON (tb_order.pizza_id = tb_pizza.Id)"
 				+ " INNER JOIN  tb_pizza_size ON (tb_order.pizza_size_id = tb_pizza_size.Id)"
 				+ " INNER JOIN tb_additional ON (tb_order.additional_id = tb_additional.Id)"
-				+ " INNER JOIN tb_order_status ON (tb_order.order_status_id = tb_order_status.Id)";
+				+ " INNER JOIN tb_order_status ON (tb_order.order_status_id = tb_order_status.Id) ORDER BY id asc";
 
 		PreparedStatement pst = null;
 		ResultSet rs = null;

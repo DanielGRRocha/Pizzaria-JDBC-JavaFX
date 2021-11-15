@@ -169,7 +169,9 @@ public class OrderFormController implements Initializable {//classe Sujeito (emi
 		List<OrderStatus> listOrderStatus = orderStatusService.findAll();
 		obsListOrderStatus = FXCollections.observableArrayList(listOrderStatus);
 		comboBoxOrderStatus.setItems(obsListOrderStatus);
+
 	}
+	
 	
 	
 	//eventos/////////////////////////////////////////////////////////////////
@@ -237,6 +239,10 @@ public class OrderFormController implements Initializable {//classe Sujeito (emi
 			obj.setMoment(Date.from(instant));
 		}
 		
+		//price
+		if (textFieldTotal.getText() == null || textFieldTotal.getText().trim().equals("")) {
+			exception.addError("total", "Field can't be empty");
+		}
 		obj.setTotal(Utils.tryParseToDouble(textFieldTotal.getText()));
 		
 		//erros
