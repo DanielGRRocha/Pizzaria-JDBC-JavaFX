@@ -5,13 +5,14 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
 <VBox prefHeight="633.0" prefWidth="830.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.InventoryListController">
    <children>
-      <Label text="Registro Item">
+      <Label text="Registro Estoque">
          <font>
             <Font name="System Bold" size="14.0" />
          </font>
@@ -22,13 +23,19 @@
       <ToolBar prefHeight="40.0" prefWidth="200.0">
         <items>
           <Button fx:id="btNew" mnemonicParsing="false" onAction="#onBtNewAction" text="Novo" />
+            <TextField fx:id="filterField" prefHeight="25.0" prefWidth="348.0" promptText="nome" style="-fx-background-color: #E5E7E9;" />
+            <Label fx:id="label" text="buscar">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Label>
         </items>
       </ToolBar>
       <TableView fx:id="tableViewInventory" prefHeight="200.0" prefWidth="200.0">
         <columns>
             <TableColumn fx:id="tableColumnId" prefWidth="45.0" text="Id" />
             <TableColumn fx:id="tableColumnName" prefWidth="266.0" text="Nome" />
-            <TableColumn fx:id="tableColumnQuantity" prefWidth="266.0" text="Quantidade (uni ou kg)" />
+            <TableColumn fx:id="tableColumnQuantity" prefWidth="266.0" text="Quantidade (unidade)" />
             <TableColumn fx:id="tableColumnEDIT" prefWidth="75.0" />
             <TableColumn fx:id="tableColumnREMOVE" prefWidth="75.0" />
         </columns>

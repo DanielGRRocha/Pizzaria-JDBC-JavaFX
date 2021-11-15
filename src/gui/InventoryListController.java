@@ -14,6 +14,8 @@ import gui.util.Utils;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -22,9 +24,11 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
@@ -39,6 +43,11 @@ public class InventoryListController implements Initializable, InterDataChangeLi
 	private InventoryBO service;
 
 	//
+	
+	@FXML
+	private Label label;
+	@FXML
+	private TextField filterField;
 
 	@FXML
 	private TableView<Inventory> tableViewInventory;
@@ -101,6 +110,8 @@ public class InventoryListController implements Initializable, InterDataChangeLi
 		List<Inventory> list = service.findAll();
 		obsList = FXCollections.observableArrayList(list);
 		tableViewInventory.setItems(obsList);
+		
+		filter();
 		initEditButtons();
 		initRemoveButtons();
 	}
@@ -147,7 +158,7 @@ public class InventoryListController implements Initializable, InterDataChangeLi
 	private void initEditButtons() {
 		tableColumnEDIT.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
 		tableColumnEDIT.setCellFactory(param -> new TableCell<Inventory, Inventory>() {
-			private final Button button = new Button("ver");
+			private final Button button = new Button("editar");
 
 			@Override
 			protected void updateItem(Inventory obj, boolean empty) {
@@ -199,6 +210,43 @@ public class InventoryListController implements Initializable, InterDataChangeLi
 			}
 			
 		}
+	}
+	
+	private void filter() {
+		// Wrap the ObservableList in a FilteredList (initially display all data).
+		FilteredList<Inventory> filteredData = new FilteredList<>(obsList, b -> true);
+
+		// 2. Set the filter Predicate whenever the filter changes.
+		filterField.textProperty().addListener((observable, oldValue, newValue) -> {
+			filteredData.setPredicate(inventory -> {
+				// If filter text is empty, display all persons.
+
+				if (newValue == null || newValue.isEmpty()) {
+					return true;
+				}
+
+				// Compare first name and last name of every person with filter text.
+				String lowerCaseFilter = newValue.toLowerCase();
+
+				if (inventory.getName().toLowerCase().indexOf(lowerCaseFilter) != -1) {
+					return true; // Filter matches name.
+
+				} 
+					
+				else
+					return false; // Does not match.
+			});
+		});
+
+		// 3. Wrap the FilteredList in a SortedList.
+		SortedList<Inventory> sortedData = new SortedList<>(filteredData);
+
+		// 4. Bind the SortedList comparator to the TableView comparator.
+		// Otherwise, sorting the TableView would have no effect.
+		sortedData.comparatorProperty().bind(tableViewInventory.comparatorProperty());
+
+		// 5. Add sorted (and filtered) data to the table.
+		tableViewInventory.setItems(sortedData);
 	}
 	
 

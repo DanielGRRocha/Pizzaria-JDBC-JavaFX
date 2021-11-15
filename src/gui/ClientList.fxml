@@ -23,7 +23,7 @@
       <ToolBar prefHeight="40.0" prefWidth="200.0">
         <items>
           <Button fx:id="btNew" mnemonicParsing="false" onAction="#onBtNewAction" text="Novo" />
-            <TextField fx:id="filterField" prefHeight="25.0" prefWidth="348.0" style="-fx-background-color: #E5E7E9;" />
+            <TextField fx:id="filterField" prefHeight="25.0" prefWidth="348.0" promptText="nome, cpf ou telefone" style="-fx-background-color: #E5E7E9;" />
             <Label fx:id="label" text="buscar">
                <font>
                   <Font name="System Bold" size="14.0" />

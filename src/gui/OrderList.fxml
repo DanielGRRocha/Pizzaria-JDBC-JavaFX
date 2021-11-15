@@ -5,13 +5,14 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToolBar?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
 <VBox prefHeight="633.0" prefWidth="1203.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.OrderListController">
    <children>
-      <Label text="Pedidos">
+      <Label text="Registro Pedido">
          <font>
             <Font name="System Bold" size="14.0" />
          </font>
@@ -22,6 +23,12 @@
       <ToolBar prefHeight="40.0" prefWidth="200.0">
         <items>
           <Button fx:id="btNew" mnemonicParsing="false" onAction="#onBtNewAction" text="Novo" />
+            <TextField fx:id="filterField" prefHeight="25.0" prefWidth="348.0" promptText="nome, sabor, tamanho, adicional, status ou data" style="-fx-background-color: #E5E7E9;" />
+            <Label fx:id="label" text="buscar">
+               <font>
+                  <Font name="System Bold" size="14.0" />
+               </font>
+            </Label>
         </items>
       </ToolBar>
       <TableView fx:id="tableViewOrder" prefHeight="200.0" prefWidth="200.0">
