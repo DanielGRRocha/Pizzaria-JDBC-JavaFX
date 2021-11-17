@@ -46,9 +46,8 @@ import model.vo.PizzaSize;
 
 
 
-public class OrderFormController implements Initializable {//classe Sujeito (emite o evento), instancia a interface DataChangeListener
+public class OrderFormController implements Initializable {
 	
-	//criar a dependência (ak instanciar criando um set)
 	private Order entity;
 	private OrderBO service;
 	private ClientBO clientService;
@@ -57,11 +56,9 @@ public class OrderFormController implements Initializable {//classe Sujeito (emi
 	private AdditionalBO additionalService;
 	private OrderStatusBO orderStatusService;
 
-	//a classe em questão vai guardar uma lista de objetos interessados em receber o evento (criar método para adicioná-los na lista)
 	private List<InterDataChangeListener> dataChangeListeners = new ArrayList<>(); 
 	
 	
-	//declarações componentes da tela
 	@FXML
 	private TextField textFieldId;
 	
@@ -173,12 +170,9 @@ public class OrderFormController implements Initializable {//classe Sujeito (emi
 	}
 	
 	
-	
-	//eventos/////////////////////////////////////////////////////////////////
-	//evento botão salvar
 	@FXML
-	public void onBtSaveAction(ActionEvent event) { //instanciar o seller e salvar no banco de dados
-		if(entity == null){//programação defensiva - verificar se a serviço e entidade estão nulos
+	public void onBtSaveAction(ActionEvent event) { 
+		if(entity == null){
 			throw new IllegalStateException("Entity was null");
 		}
 		if(service == null) {
@@ -203,7 +197,7 @@ public class OrderFormController implements Initializable {//classe Sujeito (emi
 	@FXML
 	public void onBtCancelAction(ActionEvent event) {
 		
-		Utils.currentStage(event).close();//fechar janela após apertar
+		Utils.currentStage(event).close();
 	}
 	
 	

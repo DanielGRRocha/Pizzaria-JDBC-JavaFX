@@ -36,13 +36,10 @@ import javafx.stage.Stage;
 import model.bo.InventoryBO;
 import model.vo.Inventory;
 
-public class InventoryListController implements Initializable, InterDataChangeListener { //o objeto desta classe é Observer (espera emissão de sinal das outras opara executar um determinado método)
+public class InventoryListController implements Initializable, InterDataChangeListener { 
 
-	// services (dependência) (injetar dependência sem usar a implementação da
-	// classe. criar método)
 	private InventoryBO service;
 
-	//
 	
 	@FXML
 	private Label label;
@@ -70,9 +67,9 @@ public class InventoryListController implements Initializable, InterDataChangeLi
 	@FXML
 	private Button btNew;
 
-	private ObservableList<Inventory> obsList; //associoar com tableView
+	private ObservableList<Inventory> obsList;
 
-	// métodos
+	
 	@FXML
 	public void onBtNewAction(ActionEvent event) {
 		Stage parentStage = Utils.currentStage(event);
@@ -80,7 +77,7 @@ public class InventoryListController implements Initializable, InterDataChangeLi
 		createDialogForm(obj,"/gui/InventoryForm.fxml", parentStage);
 	}
 
-	// inversão de controle
+
 	public void setInventoryBO(InventoryBO service) {
 		this.service = service;
 	}
@@ -96,13 +93,11 @@ public class InventoryListController implements Initializable, InterDataChangeLi
 		tableColumnName.setCellValueFactory(new PropertyValueFactory<>("name"));
 		tableColumnQuantity.setCellValueFactory(new PropertyValueFactory<>("quantity"));
 
-		// table ir até o final
 		Stage stage = (Stage) Main.getMainScene().getWindow();
 		tableViewInventory.prefHeightProperty().bind(stage.heightProperty());
 
 	}
 	
-	//carregar os objetos em obsList (método responsável em acessar o serviço, carregar os objetos e jogar na ObservableList);
 	public void updateTableView() {
 		if(service == null) {
 			throw new IllegalStateException("Service was null");
@@ -116,28 +111,26 @@ public class InventoryListController implements Initializable, InterDataChangeLi
 		initRemoveButtons();
 	}
 	
-	//janela Form (instanciar a janela de diálogo)
+
 	private void createDialogForm(Inventory obj, String absoluteName, Stage parentStage) {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
 			Pane pane = loader.load();
 			
-			//injetar Client obj no controlador na tela de novo cadastro(formulário) ANOTAÇÃO: instanciando o FormController é possível chamar os seus métodos
-			InventoryFormController controller = loader.getController(); //pega-se o controlador da tela que foi carregada
-			controller.setInventory(obj); //injetar nesse controller o objeto
-			controller.setService(new InventoryBO());//injetar BO (injeção de dependência)
-			controller.subscribeDataChangeListener(this);//inscrevendo um listener para receber o evento que chamará o método "onDataChanged"
+		
+			InventoryFormController controller = loader.getController();
+			controller.setInventory(obj);
+			controller.setService(new InventoryBO());
+			controller.subscribeDataChangeListener(this);
+			controller.updateFormData();
 			
-			controller.updateFormData();//chamar o método que carrega o objeto no formulário
 			
-			
-			//instanciar novo stage (stage sobre stage)
 			Stage dialogStage = new Stage();
 			dialogStage.setTitle("Novo item");
 			dialogStage.setScene(new Scene(pane));
 			dialogStage.setResizable(false);
 			dialogStage.initOwner(parentStage);
-			dialogStage.initModality(Modality.WINDOW_MODAL); //não pode acessar a janela de trás enquanto esta estiver aberta
+			dialogStage.initModality(Modality.WINDOW_MODAL);
 			dialogStage.showAndWait();
 			
 		}
@@ -148,12 +141,11 @@ public class InventoryListController implements Initializable, InterDataChangeLi
 	}
 
 	@Override
-	public void onDataChanged() {//veio da interface, irá atualizar a tabela quando receber o sinal utilizando o método "updateTableView"
+	public void onDataChanged() {
 		updateTableView();
 		
 	}
 	
-	//método do EDIT (chamar no método "updateTableView")
 	
 	private void initEditButtons() {
 		tableColumnEDIT.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
@@ -174,7 +166,6 @@ public class InventoryListController implements Initializable, InterDataChangeLi
 		});
 	}
 	
-	//método do REMOVE
 	
 	private void initRemoveButtons() {
 		tableColumnREMOVE.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
@@ -195,7 +186,7 @@ public class InventoryListController implements Initializable, InterDataChangeLi
 	}
 
 	private void removeEntity(Inventory obj) {
-		Optional<ButtonType> result = Alerts.showConfirmation("Confirmation", "Are you sure to delete?");
+		Optional<ButtonType> result = Alerts.showConfirmation("Epa", "Certeza que quer deletar?");
 		
 		if(result.get() == ButtonType.OK) {
 			if(service == null) {
@@ -205,7 +196,7 @@ public class InventoryListController implements Initializable, InterDataChangeLi
 				service.remove(obj);
 				updateTableView();
 			}
-			catch(DbIntegrityException e) {//deve ser a mesma usada na classe dao
+			catch(DbIntegrityException e) {
 				Alerts.showAlert("Error removing object", null,e.getMessage(),AlertType.ERROR);
 			}
 			

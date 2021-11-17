@@ -8,9 +8,13 @@ public class BaseDAO {
 
 	Connection conn = null;
 
-	String url = "jdbc:mysql://localhost/pizzaria_michelangelo?useTimezone=true&serverTimezone=UTC";
-	String user = "root";
-	String senha = "140180";
+//	String url = "jdbc:mysql://localhost/pizzaria_michelangelo";
+//	String user = "root";
+//	String senha = "140180";
+	
+	String url = "jdbc:postgresql://localhost/pizzaria_michelangelo";
+	String user = "postgres";
+	String senha = "vaidarcerto";
 
 	public Connection getConnection() {
 

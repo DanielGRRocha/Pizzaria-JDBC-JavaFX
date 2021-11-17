@@ -124,7 +124,7 @@ public class AdditionalListController implements Initializable, InterDataChangeL
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
 			Pane pane = loader.load();
 			
-			//injetar Client obj no controlador na tela de novo cadastro(formulário) ANOTAÇÃO: instanciando o FormController é possível chamar os seus métodos
+			//injetar  obj no controlador na tela de novo cadastro(formulário) ANOTAÇÃO: instanciando o FormController é possível chamar os seus métodos
 			AdditionalFormController controller = loader.getController(); //pega-se o controlador da tela que foi carregada
 			controller.setAdditional(obj); //injetar nesse controller o objeto
 			controller.setService(new AdditionalBO());//injetar BO (injeção de dependência)
@@ -197,7 +197,7 @@ public class AdditionalListController implements Initializable, InterDataChangeL
 	}
 
 	private void removeEntity(Additional obj) {
-		Optional<ButtonType> result = Alerts.showConfirmation("Confirmation", "Are you sure to delete?");
+		Optional<ButtonType> result = Alerts.showConfirmation("Epa", "Certeza que quer deletar?");
 		
 		if(result.get() == ButtonType.OK) {
 			if(service == null) {

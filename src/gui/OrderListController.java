@@ -51,13 +51,11 @@ import model.vo.PizzaSize;
 
 
 
-public class OrderListController implements Initializable, InterDataChangeListener { //o objeto desta classe é Observer (espera emissão de sinal das outras opara executar um determinado método)
+public class OrderListController implements Initializable, InterDataChangeListener {
 
-	// services (dependência) (injetar dependência sem usar a implementação da
-	// classe. criar método)
+	
 	private OrderBO service;
 
-	//
 	
 	@FXML
 	private Label label;
@@ -100,9 +98,9 @@ public class OrderListController implements Initializable, InterDataChangeListen
 	@FXML
 	private Button btNew;
 
-	private ObservableList<Order> obsList; //associoar com tableView
+	private ObservableList<Order> obsList; 
 
-	// métodos
+
 	@FXML
 	public void onBtNewAction(ActionEvent event) {
 		Stage parentStage = Utils.currentStage(event);
@@ -110,7 +108,7 @@ public class OrderListController implements Initializable, InterDataChangeListen
 		createDialogForm(obj,"/gui/OrderForm.fxml", parentStage);
 	}
 
-	// inversão de controle
+	
 	public void setOrderBO(OrderBO service) {
 		this.service = service;
 	}
@@ -145,13 +143,13 @@ public class OrderListController implements Initializable, InterDataChangeListen
 		tableColumnTotal.setCellValueFactory(new PropertyValueFactory<>("total"));
 		Utils.formatTableColumnDouble(tableColumnTotal, 2);
 
-		// table ir até o final
+		
 		Stage stage = (Stage) Main.getMainScene().getWindow();
 		tableViewOrder.prefHeightProperty().bind(stage.heightProperty());
 
 	}
 	
-	//carregar os objetos em obsList (método responsável em acessar o serviço, carregar os objetos e jogar na ObservableList);
+	
 	public void updateTableView() {
 		if(service == null) {
 			throw new IllegalStateException("Service was null");
@@ -165,7 +163,7 @@ public class OrderListController implements Initializable, InterDataChangeListen
 		initRemoveButtons();
 	}
 	
-	//janela Form (instanciar a janela de diálogo)
+
 	private void createDialogForm(Order obj, String absoluteName, Stage parentStage) {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
@@ -179,7 +177,7 @@ public class OrderListController implements Initializable, InterDataChangeListen
 			
 			controller.updateFormData();
 			
-			//instanciar novo stage (stage sobre stage)
+		
 			Stage dialogStage = new Stage();
 			dialogStage.setTitle("Novo pedido");
 			dialogStage.setScene(new Scene(pane));
@@ -196,12 +194,11 @@ public class OrderListController implements Initializable, InterDataChangeListen
 	}
 
 	@Override
-	public void onDataChanged() {//veio da interface, irá atualizar a tabela quando receber o sinal utilizando o método "updateTableView"
+	public void onDataChanged() {
 		updateTableView();
 		
 	}
 	
-	//método do EDIT (chamar no método "updateTableView")
 	
 	private void initEditButtons() {
 		tableColumnEDIT.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
@@ -222,7 +219,6 @@ public class OrderListController implements Initializable, InterDataChangeListen
 		});
 	}
 	
-	//método do REMOVE
 	
 	private void initRemoveButtons() {
 		tableColumnREMOVE.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
@@ -243,7 +239,7 @@ public class OrderListController implements Initializable, InterDataChangeListen
 	}
 
 	private void removeEntity(Order obj) {
-		Optional<ButtonType> result = Alerts.showConfirmation("Confirmation", "Are you sure to delete?");
+		Optional<ButtonType> result = Alerts.showConfirmation("Epa", "Certeza que quer deletar?");
 		
 		if(result.get() == ButtonType.OK) {
 			if(service == null) {

@@ -24,16 +24,15 @@ import model.exceptions.ValidationException;
 import model.vo.Client;
 
 
-public class ClientFormController implements Initializable {//classe Sujeito (emite o evento), instancia a interface DataChangeListener
+public class ClientFormController implements Initializable {
 	
-	//criar a dependência (ak instanciar criando um set)
+
 	private Client entity;
 	private ClientBO service;
-	//a classe em questão vai guardar uma lista de objetos interessados em receber o evento (criar método para adicioná-los na lista)
+
 	private List<InterDataChangeListener> dataChangeListeners = new ArrayList<>(); 
 	
 	
-	//declarações componentes da tela
 	@FXML
 	private TextField textFieldId;
 	
@@ -68,25 +67,23 @@ public class ClientFormController implements Initializable {//classe Sujeito (em
 	@FXML
 	private Button btCancel;
 	
-	//set Client (agora controlador tem instância do Client)
+
 	public void setClient(Client entity) {
 		this.entity = entity;
 	}
-	//set SellerService (agora controlador tem instância da classe de serviços do Client)
+
 	public void setService(ClientBO service) {
 		this.service = service;
 	}
-	//método para adicionar objetos na lista "dataChangeListeners"
-	public void subscribeDataChangeListener(InterDataChangeListener listener) {//objetos que implementarem a interface "DataChangeListener" podem se inscrever para receber o evento da classe
+	
+	public void subscribeDataChangeListener(InterDataChangeListener listener) {
 		dataChangeListeners.add(listener);
 	}
 	
 	
-	//eventos/////////////////////////////////////////////////////////////////
-	//evento botão salvar
 	@FXML
-	public void onBtSaveAction(ActionEvent event) { //instanciar o seller e salvar no banco de dados
-		if(entity == null){//programação defensiva - verificar se a serviço e entidade estão nulos
+	public void onBtSaveAction(ActionEvent event) { 
+		if(entity == null){
 			throw new IllegalStateException("Entity was null");
 		}
 		if(service == null) {
@@ -95,8 +92,8 @@ public class ClientFormController implements Initializable {//classe Sujeito (em
 		try {
 			entity = getFormData();
 			service.saveOrUpdate(entity);
-			notifyDataChangeListeners(); //autoexplicativo, chama o método que irá notificar os listeners que deu certo e eles irão atualizar a tabela
-			//fechar a janela após salvar (adiciona esse parâmentro no método)
+			notifyDataChangeListeners(); 
+			
 			Utils.currentStage(event).close();
 			
 		}
@@ -109,7 +106,7 @@ public class ClientFormController implements Initializable {//classe Sujeito (em
 	}
 	
 	
-	private Client getFormData() {//pegar os dados do formulario
+	private Client getFormData() {
 		Client obj = new Client();
 		
 		ValidationException exception = new ValidationException("Validation error");
@@ -150,22 +147,22 @@ public class ClientFormController implements Initializable {//classe Sujeito (em
 		return obj;
 	}
 	
-	private void notifyDataChangeListeners() {//método que irá notificar os listeners(método da interface) que deu certo e eles irão atualizar a tabela (será chamado pelas classes)
-	//obs: SellerFormController emite o evento. É preciso fazer uma implementação na classe que recebe o evento e executa o método de atualizar a lista (SellerListController)	
+	private void notifyDataChangeListeners() {
+	
 		for (InterDataChangeListener listener : dataChangeListeners) {
 			listener.onDataChanged();
 		}
 		
 	}
 	
-	//evento botão cancelar
+	
 	@FXML
 	public void onBtCancelAction(ActionEvent event) {
 		
-		Utils.currentStage(event).close();//fechar janela após apertar
+		Utils.currentStage(event).close();
 	}
 
-	/////////////////////////////////////////////////////////////////////////////////////////////
+
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {
 		initializeNodes();
@@ -182,14 +179,14 @@ public class ClientFormController implements Initializable {//classe Sujeito (em
 		
 	}
 	
-	//método updateFormData que irá pegar os dados do seller e popular as caixinhas de texto do formulário (settar)
+	
 	public void updateFormData() {
-		//programação defensiva: criar um if para verificar entity está valendo nulo
+		
 		if(entity == null) {
 			throw new IllegalStateException("Entity was null");
 		}
 		
-		textFieldId.setText(String.valueOf(entity.getId())); //converte Interger em String
+		textFieldId.setText(String.valueOf(entity.getId()));
 		textFieldName.setText(entity.getName());
 		textFieldCpf.setText(entity.getCpf());
 		textFieldPhone.setText(entity.getPhone());

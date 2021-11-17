@@ -37,13 +37,10 @@ import model.bo.PizzaBO;
 import model.vo.Pizza;
 
 
-public class PizzaListController implements Initializable, InterDataChangeListener { //o objeto desta classe é Observer (espera emissão de sinal das outras opara executar um determinado método)
+public class PizzaListController implements Initializable, InterDataChangeListener {
 
-	// services (dependência) (injetar dependência sem usar a implementação da
-	// classe. criar método)
 	private PizzaBO service;
 
-	//
 	
 	@FXML
 	private Label label;
@@ -79,7 +76,6 @@ public class PizzaListController implements Initializable, InterDataChangeListen
 
 	private ObservableList<Pizza> obsList; //associoar com tableView
 
-	// métodos
 	@FXML
 	public void onBtNewAction(ActionEvent event) {
 		Stage parentStage = Utils.currentStage(event);
@@ -87,7 +83,6 @@ public class PizzaListController implements Initializable, InterDataChangeListen
 		createDialogForm(obj,"/gui/PizzaForm.fxml", parentStage);
 	}
 
-	// inversão de controle
 	public void setPizzaBO(PizzaBO service) {
 		this.service = service;
 	}
@@ -114,7 +109,6 @@ public class PizzaListController implements Initializable, InterDataChangeListen
 
 	}
 	
-	//carregar os objetos em obsList (método responsável em acessar o serviço, carregar os objetos e jogar na ObservableList);
 	public void updateTableView() {
 		if(service == null) {
 			throw new IllegalStateException("Service was null");
@@ -128,28 +122,24 @@ public class PizzaListController implements Initializable, InterDataChangeListen
 		initRemoveButtons();
 	}
 	
-	//janela Form (instanciar a janela de diálogo)
 	private void createDialogForm(Pizza obj, String absoluteName, Stage parentStage) {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
 			Pane pane = loader.load();
 			
-			//injetar Client obj no controlador na tela de novo cadastro(formulário) ANOTAÇÃO: instanciando o FormController é possível chamar os seus métodos
-			PizzaFormController controller = loader.getController(); //pega-se o controlador da tela que foi carregada
-			controller.setPizza(obj); //injetar nesse controller o objeto
-			controller.setService(new PizzaBO());//injetar BO (injeção de dependência)
-			controller.subscribeDataChangeListener(this);//inscrevendo um listener para receber o evento que chamará o método "onDataChanged"
+			PizzaFormController controller = loader.getController();
+			controller.setPizza(obj);
+			controller.setService(new PizzaBO());
+			controller.subscribeDataChangeListener(this);
 			
-			controller.updateFormData();//chamar o método que carrega o objeto no formulário
+			controller.updateFormData();
 			
-			
-			//instanciar novo stage (stage sobre stage)
 			Stage dialogStage = new Stage();
 			dialogStage.setTitle("Nova pizza");
 			dialogStage.setScene(new Scene(pane));
 			dialogStage.setResizable(false);
 			dialogStage.initOwner(parentStage);
-			dialogStage.initModality(Modality.WINDOW_MODAL); //não pode acessar a janela de trás enquanto esta estiver aberta
+			dialogStage.initModality(Modality.WINDOW_MODAL);
 			dialogStage.showAndWait();
 			
 		}
@@ -160,12 +150,10 @@ public class PizzaListController implements Initializable, InterDataChangeListen
 	}
 
 	@Override
-	public void onDataChanged() {//veio da interface, irá atualizar a tabela quando receber o sinal utilizando o método "updateTableView"
+	public void onDataChanged() {
 		updateTableView();
 		
 	}
-	
-	//método do EDIT (chamar no método "updateTableView")
 	
 	private void initEditButtons() {
 		tableColumnEDIT.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
@@ -186,8 +174,6 @@ public class PizzaListController implements Initializable, InterDataChangeListen
 		});
 	}
 	
-	//método do REMOVE
-	
 	private void initRemoveButtons() {
 		tableColumnREMOVE.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
 		tableColumnREMOVE.setCellFactory(param -> new TableCell<Pizza, Pizza>() {
@@ -207,7 +193,7 @@ public class PizzaListController implements Initializable, InterDataChangeListen
 	}
 
 	private void removeEntity(Pizza obj) {
-		Optional<ButtonType> result = Alerts.showConfirmation("Confirmation", "Are you sure to delete?");
+		Optional<ButtonType> result = Alerts.showConfirmation("Epa", "Certeza que quer deletar?");
 		
 		if(result.get() == ButtonType.OK) {
 			if(service == null) {

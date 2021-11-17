@@ -1,10 +1,17 @@
 package gui;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
+
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfWriter;
 
 import application.Main;
 import db.DbIntegrityException;
@@ -36,13 +43,12 @@ import javafx.stage.Stage;
 import model.bo.ClientBO;
 import model.vo.Client;
 
-public class ClientListController implements Initializable, InterDataChangeListener { //o objeto desta classe é Observer (espera emissão de sinal das outras opara executar um determinado método)
-
-	// services (dependência) (injetar dependência sem usar a implementação da
-	// classe. criar método)
+public class ClientListController implements Initializable, InterDataChangeListener {
+	
 	private ClientBO service;
 
-	//
+	@FXML
+	private Button btGerarPDF;
 	
 	@FXML
 	private Label label;
@@ -76,17 +82,21 @@ public class ClientListController implements Initializable, InterDataChangeListe
 	@FXML
 	private Button btNew;
 
-	private ObservableList<Client> obsList; //associoar com tableView
+	private ObservableList<Client> obsList;
 
-	// métodos
 	@FXML
 	public void onBtNewAction(ActionEvent event) {
 		Stage parentStage = Utils.currentStage(event);
 		Client obj = new Client();
 		createDialogForm(obj,"/gui/ClientForm.fxml", parentStage);
 	}
+	
+	@FXML
+	public void onBtGerarPDF(ActionEvent event) {
+		generatePdf();
+	}
 
-	// inversão de controle
+
 	public void setClientBO(ClientBO service) {
 		this.service = service;
 	}
@@ -104,13 +114,11 @@ public class ClientListController implements Initializable, InterDataChangeListe
 		tableColumnPhone.setCellValueFactory(new PropertyValueFactory<>("phone"));//igual escrito na classe entidade
 		tableColumnAddress.setCellValueFactory(new PropertyValueFactory<>("address"));
 
-		// table ir até o final
 		Stage stage = (Stage) Main.getMainScene().getWindow();
 		tableViewClient.prefHeightProperty().bind(stage.heightProperty());
 
 	}
 	
-	//carregar os sellers em obsList (método responsável em acessar o serviço, carregar os sellers e jogar na ObservableList);
 	public void updateTableView() {
 		if(service == null) {
 			throw new IllegalStateException("Service was null");
@@ -124,28 +132,24 @@ public class ClientListController implements Initializable, InterDataChangeListe
 		initRemoveButtons();
 	}
 	
-	//janela departmentForm (instanciar a janela de diálogo)
 	private void createDialogForm(Client obj, String absoluteName, Stage parentStage) {
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource(absoluteName));
 			Pane pane = loader.load();
 			
-			//injetar Client obj no controlador na tela de novo cadastro(formulário) ANOTAÇÃO: instanciando o ClientFormController é possível chamar os seus métodos
-			ClientFormController controller = loader.getController(); //pega-se o controlador da tela que foi carregada
-			controller.setClient(obj); //injetar nesse controller o departamento
-			controller.setService(new ClientBO());//injetar SellerService (injeção de dependência)
-			controller.subscribeDataChangeListener(this);//inscrevendo um listener para receber o evento que chamará o método "onDataChanged"
+			ClientFormController controller = loader.getController(); 
+			controller.setClient(obj);
+			controller.setService(new ClientBO());
+			controller.subscribeDataChangeListener(this);
 			
-			controller.updateFormData();//chamar o método que carrega o objeto no formulário
+			controller.updateFormData();
 			
-			
-			//instanciar novo stage (stage sobre stage)
 			Stage dialogStage = new Stage();
 			dialogStage.setTitle("Novo cliente");
 			dialogStage.setScene(new Scene(pane));
 			dialogStage.setResizable(false);
 			dialogStage.initOwner(parentStage);
-			dialogStage.initModality(Modality.WINDOW_MODAL); //não pode acessar a janela de trás enquanto esta estiver aberta
+			dialogStage.initModality(Modality.WINDOW_MODAL);
 			dialogStage.showAndWait();
 			
 		}
@@ -156,12 +160,10 @@ public class ClientListController implements Initializable, InterDataChangeListe
 	}
 
 	@Override
-	public void onDataChanged() {//veio da interface, irá atualizar a tabela quando receber o sinal utilizando o método "updateTableView"
+	public void onDataChanged() {
 		updateTableView();
 		
 	}
-	
-	//método do EDIT (chamar no método "updateTableView")
 	
 	private void initEditButtons() {
 		tableColumnEDIT.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
@@ -182,8 +184,6 @@ public class ClientListController implements Initializable, InterDataChangeListe
 		});
 	}
 	
-	//método do REMOVE
-	
 	private void initRemoveButtons() {
 		tableColumnREMOVE.setCellValueFactory(param -> new ReadOnlyObjectWrapper<>(param.getValue()));
 		tableColumnREMOVE.setCellFactory(param -> new TableCell<Client, Client>() {
@@ -203,7 +203,7 @@ public class ClientListController implements Initializable, InterDataChangeListe
 	}
 
 	private void removeEntity(Client obj) {
-		Optional<ButtonType> result = Alerts.showConfirmation("Confirmation", "Are you sure to delete?");
+		Optional<ButtonType> result = Alerts.showConfirmation("Epa", "Certeza que quer deletar?");
 		
 		if(result.get() == ButtonType.OK) {
 			if(service == null) {
@@ -260,5 +260,34 @@ public class ClientListController implements Initializable, InterDataChangeListe
 		// 5. Add sorted (and filtered) data to the table.
 		tableViewClient.setItems(sortedData);
 	}
-
+	
+	private void generatePdf() {
+		Document doc = new Document();
+		try {
+			PdfWriter.getInstance(doc, new FileOutputStream("C:\\Users\\Public\\Clientes.pdf"));
+			doc.open();
+			List<Client> items = tableViewClient.getItems();
+			
+			for (Client client : items) {
+				doc.add(new Paragraph("Pizzaria do Michelangelo - Lista de Clientes"));
+				doc.add(new Paragraph(""));
+				doc.add(new Paragraph("Id: "+client.getId()));
+				doc.add(new Paragraph("Nome: "+client.getName()));
+				doc.add(new Paragraph("CPF: "+client.getCpf()));
+				doc.add(new Paragraph("Telefone: "+client.getPhone()));
+				doc.add(new Paragraph("Endereço: "+client.getAddress()));
+				doc.add(new Paragraph(""));
+			}
+			
+			doc.close();
+			Alerts.showAlert("Opa", null, "PDF criado, meu bom!", AlertType.INFORMATION);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (DocumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 }// class

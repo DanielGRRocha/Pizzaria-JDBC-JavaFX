@@ -60,11 +60,11 @@ public class AdditionalFormController implements Initializable {//classe Sujeito
 	@FXML
 	private Button btCancel;
 	
-	//set Inventory (agora controlador tem instância do Inventory)
+	//set Additional (agora controlador tem instância da entidade)
 	public void setAdditional(Additional entity) {
 		this.entity = entity;
 	}
-	//set InventoryBO (agora controlador tem instância da classe de serviços do Inventory)
+	//set AdditionalBO (agora controlador tem instância da classe de serviços do Additional)
 	public void setService(AdditionalBO service) {
 		this.service = service;
 	}
