@@ -41,7 +41,6 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.bo.PizzaBO;
-import model.vo.Additional;
 import model.vo.Pizza;
 
 
