@@ -26,7 +26,6 @@
                 </Menu>
                 <Menu mnemonicParsing="false" text="Opções">
                   <items>
-                    <MenuItem fx:id="menuItemLogin" mnemonicParsing="false" onAction="#onMenuItemLoginAction" text="Entrar" />
                         <MenuItem fx:id="menuItemNewClient" mnemonicParsing="false" onAction="#onMenuItemNewClientAction" text="Clientes Registrados" />
                   </items>
                 </Menu>

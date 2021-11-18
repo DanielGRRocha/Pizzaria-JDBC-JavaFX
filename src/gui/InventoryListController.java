@@ -1,10 +1,17 @@
 package gui;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
+
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfWriter;
 
 import application.Main;
 import db.DbIntegrityException;
@@ -39,7 +46,9 @@ import model.vo.Inventory;
 public class InventoryListController implements Initializable, InterDataChangeListener { 
 
 	private InventoryBO service;
-
+	
+	@FXML
+	private Button btGerarPDF;
 	
 	@FXML
 	private Label label;
@@ -75,6 +84,11 @@ public class InventoryListController implements Initializable, InterDataChangeLi
 		Stage parentStage = Utils.currentStage(event);
 		Inventory obj = new Inventory();
 		createDialogForm(obj,"/gui/InventoryForm.fxml", parentStage);
+	}
+	
+	@FXML
+	public void onBtGerarPDF(ActionEvent event) {
+		generatePdf();
 	}
 
 
@@ -238,6 +252,34 @@ public class InventoryListController implements Initializable, InterDataChangeLi
 
 		// 5. Add sorted (and filtered) data to the table.
 		tableViewInventory.setItems(sortedData);
+	}
+	
+	private void generatePdf() {
+		Document doc = new Document();
+		try {
+			PdfWriter.getInstance(doc, new FileOutputStream("C:\\Users\\Public\\Estoque.pdf"));
+			doc.open();
+			List<Inventory> items = tableViewInventory.getItems();
+			
+			doc.add(new Paragraph("Pizzaria do Michelangelo - Estoque\n\n"));
+			for (Inventory obj : items) {
+				
+				doc.add(new Paragraph(""));
+				doc.add(new Paragraph("Id: "+obj.getId()));
+				doc.add(new Paragraph("Nome: "+obj.getName()));
+				doc.add(new Paragraph("Quantidade: "+obj.getQuantity()));
+				doc.add(new Paragraph("\n"));
+			}
+			
+			doc.close();
+			Alerts.showAlert("Opa", null, "PDF criado, meu bom!", AlertType.INFORMATION);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (DocumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 

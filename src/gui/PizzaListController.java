@@ -1,10 +1,17 @@
 package gui;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
+
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfWriter;
 
 import application.Main;
 import db.DbIntegrityException;
@@ -34,14 +41,17 @@ import javafx.scene.layout.Pane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.bo.PizzaBO;
+import model.vo.Additional;
 import model.vo.Pizza;
 
 
 public class PizzaListController implements Initializable, InterDataChangeListener {
 
 	private PizzaBO service;
-
 	
+	@FXML
+	private Button btGerarPDF;
+
 	@FXML
 	private Label label;
 	@FXML
@@ -81,6 +91,11 @@ public class PizzaListController implements Initializable, InterDataChangeListen
 		Stage parentStage = Utils.currentStage(event);
 		Pizza obj = new Pizza();
 		createDialogForm(obj,"/gui/PizzaForm.fxml", parentStage);
+	}
+	
+	@FXML
+	public void onBtGerarPDF(ActionEvent event) {
+		generatePdf();
 	}
 
 	public void setPizzaBO(PizzaBO service) {
@@ -245,6 +260,36 @@ public class PizzaListController implements Initializable, InterDataChangeListen
 
 		// 5. Add sorted (and filtered) data to the table.
 		tableViewPizza.setItems(sortedData);
+	}
+	
+	private void generatePdf() {
+		Document doc = new Document();
+		try {
+			PdfWriter.getInstance(doc, new FileOutputStream("C:\\Users\\Public\\Pizzas.pdf"));
+			doc.open();
+			List<Pizza> items = tableViewPizza.getItems();
+			
+			doc.add(new Paragraph("Pizzaria do Michelangelo - Pizzas\n\n"));
+			for (Pizza obj : items) {
+				
+				doc.add(new Paragraph(""));
+				doc.add(new Paragraph("Id: "+obj.getId()));
+				doc.add(new Paragraph("Sabor: "+obj.getName()));
+				doc.add(new Paragraph(String.format("Preço Pequena: R$ %.2f", obj.getPriceSmallPizza())));
+				doc.add(new Paragraph(String.format("Preço Média: R$ %.2f", obj.getPriceMediumPizza())));
+				doc.add(new Paragraph(String.format("Preço Grande: R$ %.2f", obj.getPriceBigPizza())));
+				doc.add(new Paragraph("\n"));
+			}
+			
+			doc.close();
+			Alerts.showAlert("Opa", null, "PDF criado, meu bom!", AlertType.INFORMATION);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (DocumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 

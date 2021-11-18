@@ -43,12 +43,6 @@ public class MainViewController implements Initializable {
 	@FXML
 	private MenuItem menuItemNewClient;
 	
-	@FXML
-	private MenuItem menuItemLogin;
-	
-	@FXML
-	private MenuItem menuItemAbout;
-	
 	
 	@FXML
 	public void onMenuItemClientAction() {
@@ -98,16 +92,6 @@ public class MainViewController implements Initializable {
 		});
 	}
 	
-	@FXML
-	public void onMenuItemLoginAction() throws IOException {
-		loadView("/gui/LoginScreen.fxml", (LoginController controller) -> {
-		});
-	}
-	
-	@FXML
-	public void onMenuItemAboutAction() {
-		loadView("/gui/Login.fxml", x -> {});
-	}
 	
 	@Override
 	public void initialize(URL url, ResourceBundle rb) {

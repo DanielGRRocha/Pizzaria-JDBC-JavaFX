@@ -1,10 +1,17 @@
 package gui;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
+
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfWriter;
 
 import application.Main;
 import db.DbIntegrityException;
@@ -46,6 +53,9 @@ public class AdditionalListController implements Initializable, InterDataChangeL
 	//
 	
 	@FXML
+	private Button btGerarPDF;
+	
+	@FXML
 	private Label label;
 	@FXML
 	private TextField filterField;
@@ -79,6 +89,11 @@ public class AdditionalListController implements Initializable, InterDataChangeL
 		Stage parentStage = Utils.currentStage(event);
 		Additional obj = new Additional();
 		createDialogForm(obj,"/gui/AdditionalForm.fxml", parentStage);
+	}
+	
+	@FXML
+	public void onBtGerarPDF(ActionEvent event) {
+		generatePdf();
 	}
 
 	// inversão de controle
@@ -248,6 +263,34 @@ public class AdditionalListController implements Initializable, InterDataChangeL
 
 		// 5. Add sorted (and filtered) data to the table.
 		tableViewAdditional.setItems(sortedData);
+	}
+	
+	private void generatePdf() {
+		Document doc = new Document();
+		try {
+			PdfWriter.getInstance(doc, new FileOutputStream("C:\\Users\\Public\\Adicionais.pdf"));
+			doc.open();
+			List<Additional> items = tableViewAdditional.getItems();
+			
+			doc.add(new Paragraph("Pizzaria do Michelangelo - Adicionais\n\n"));
+			for (Additional obj : items) {
+				
+				doc.add(new Paragraph(""));
+				doc.add(new Paragraph("Id: "+obj.getId()));
+				doc.add(new Paragraph("Nome: "+obj.getName()));
+				doc.add(new Paragraph(String.format("Preço: R$ %.2f", obj.getPrice())));
+				doc.add(new Paragraph("\n"));
+			}
+			
+			doc.close();
+			Alerts.showAlert("Opa", null, "PDF criado, meu bom!", AlertType.INFORMATION);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (DocumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 

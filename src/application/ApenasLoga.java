@@ -8,7 +8,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-public class Screen extends Application {
+public class ApenasLoga extends Application {
 
 	private static Stage primaryStage;
 
@@ -24,17 +24,11 @@ public class Screen extends Application {
 
 	public static void LoginScreen() throws IOException {
 
-		Parent root = FXMLLoader.load(Screen.class.getResource("/gui/LoginScreen.fxml"));
+		Parent root = FXMLLoader.load(ApenasLoga.class.getResource("/gui/LoginScreen.fxml"));
 		Scene cena = new Scene(root);
 		primaryStage.setScene(cena);
 	}
 	
-	public static void OrderListScreen() throws IOException {
-
-		Parent root = FXMLLoader.load(Screen.class.getResource("/gui/OrderList2.fxml"));
-		Scene scene = new Scene(root);
-		primaryStage.setScene(scene);
-	}
 
 
 	public static void main(String[] args) {
@@ -46,7 +40,7 @@ public class Screen extends Application {
 	}
 
 	public static void setPrimaryStage(Stage primaryStage) {
-		Screen.primaryStage = primaryStage;
+		ApenasLoga.primaryStage = primaryStage;
 	}
 	
 
