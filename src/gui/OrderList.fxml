@@ -23,6 +23,7 @@
       <ToolBar prefHeight="40.0" prefWidth="200.0">
         <items>
           <Button fx:id="btNew" mnemonicParsing="false" onAction="#onBtNewAction" text="Novo" />
+            <Button fx:id="btGerarPDF" mnemonicParsing="false" onAction="#onBtGerarPDF" text="Gerar PDF" />
             <TextField fx:id="filterField" prefHeight="25.0" prefWidth="348.0" promptText="nome, sabor, tamanho, adicional, status ou data" style="-fx-background-color: #E5E7E9;" />
             <Label fx:id="label" text="buscar">
                <font>

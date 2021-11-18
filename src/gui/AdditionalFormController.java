@@ -111,13 +111,13 @@ public class AdditionalFormController implements Initializable {//classe Sujeito
 		//fazer validação para que o campo não seja vazio
 		//name
 		if(textFieldName.getText() == null || textFieldName.getText().trim().equals("")) {
-			exception.addError("name", "Field can't be empty");
+			exception.addError("name", "deixe vazio não");
 		}
 		obj.setName(textFieldName.getText());
 		
 		//price
 		if(textFieldPrice.getText() == null || textFieldPrice.getText().trim().equals("")) {
-			exception.addError("price", "Field can't be empty");
+			exception.addError("price", "deixe vazio não");
 		}
 		obj.setPrice(Utils.tryParseToDouble(textFieldPrice.getText()));
 		

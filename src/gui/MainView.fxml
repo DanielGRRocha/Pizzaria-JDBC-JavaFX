@@ -26,17 +26,18 @@
                 </Menu>
                 <Menu mnemonicParsing="false" text="Opções">
                   <items>
-                    <MenuItem fx:id="menuItemAbout" mnemonicParsing="false" onAction="#onMenuItemAboutAction" text="Entrar" />
+                    <MenuItem fx:id="menuItemLogin" mnemonicParsing="false" onAction="#onMenuItemLoginAction" text="Entrar" />
+                        <MenuItem fx:id="menuItemNewClient" mnemonicParsing="false" onAction="#onMenuItemNewClientAction" text="Clientes Registrados" />
                   </items>
                 </Menu>
               </menus>
             </MenuBar>
-            <ImageView fitHeight="335.0" fitWidth="409.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="416.0" fitWidth="510.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../../../../../../git/ProjetoPizzaria/Pizzaria/src/gui/view/VE/Rectangle%208.png" />
                </image>
                <VBox.margin>
-                  <Insets left="180.0" top="150.0" />
+                  <Insets left="385.0" top="120.0" />
                </VBox.margin>
             </ImageView>
          </children>

@@ -116,25 +116,25 @@ public class PizzaFormController implements Initializable {
 		//fazer validação para que o campo não seja vazio
 		//name
 		if(textFieldName.getText() == null || textFieldName.getText().trim().equals("")) {
-			exception.addError("name", "Field can't be empty");
+			exception.addError("name", "deixe vazio não");
 		}
 		obj.setName(textFieldName.getText());
 		
 		//priceSmallPizza
 		if(textFieldPriceSmallPizza.getText() == null || textFieldPriceSmallPizza.getText().trim().equals("")) {
-			exception.addError("priceSmallPizza", "Field can't be empty");
+			exception.addError("priceSmallPizza", "deixe vazio não");
 		}
 		obj.setPriceSmallPizza(Utils.tryParseToDouble(textFieldPriceSmallPizza.getText()));
 		
 		//priceMediumPizza
 		if (textFieldPriceMediumPizza.getText() == null || textFieldPriceMediumPizza.getText().trim().equals("")) {
-			exception.addError("priceMediumPizza", "Field can't be empty");
+			exception.addError("priceMediumPizza", "deixe vazio não");
 		}
 		obj.setPriceMediumPizza(Utils.tryParseToDouble(textFieldPriceMediumPizza.getText()));
 		
 		//priceBigPizza
 		if (textFieldPriceBigPizza.getText() == null || textFieldPriceBigPizza.getText().trim().equals("")) {
-			exception.addError("priceBigPizza", "Field can't be empty");
+			exception.addError("priceBigPizza", "deixe vazio não");
 		}
 		obj.setPriceBigPizza(Utils.tryParseToDouble(textFieldPriceBigPizza.getText()));
 

@@ -24,6 +24,7 @@ public class Utils {
 	public static Stage currentStage(ActionEvent event) {
 		return (Stage) ((Node) event.getSource()).getScene().getWindow();
 	}
+	
 
 	// método para converter String em Integer
 	public static Integer tryParseToInt(String str) {

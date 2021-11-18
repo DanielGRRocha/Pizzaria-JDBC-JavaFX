@@ -105,13 +105,13 @@ public class InventoryFormController implements Initializable {
 		//fazer validação para que o campo não seja vazio
 		//name
 		if(textFieldName.getText() == null || textFieldName.getText().trim().equals("")) {
-			exception.addError("name", "Field can't be empty");
+			exception.addError("name", "deixe vazio não");
 		}
 		obj.setName(textFieldName.getText());
 		
 		//quantity
 		if(textFieldQuantity.getText() == null || textFieldQuantity.getText().trim().equals("")) {
-			exception.addError("quantity", "Field can't be empty");
+			exception.addError("quantity", "deixe vazio não");
 		}
 		obj.setQuantity(Utils.tryParseToInt(textFieldQuantity.getText()));
 		

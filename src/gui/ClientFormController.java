@@ -116,25 +116,25 @@ public class ClientFormController implements Initializable {
 		//fazer validação para que o campo não seja vazio
 		//nome
 		if(textFieldName.getText() == null || textFieldName.getText().trim().equals("")) {
-			exception.addError("name", "Field can't be empty");
+			exception.addError("name", "deixe vazio não");
 		}
 		obj.setName(textFieldName.getText());
 		
 		//cpf
 		if(textFieldCpf.getText() == null || textFieldCpf.getText().trim().equals("")) {
-			exception.addError("cpf", "Field can't be empty");
+			exception.addError("cpf", "deixe vazio não");
 		}
 		obj.setCpf(textFieldCpf.getText());
 		
 		//phone
 		if(textFieldPhone.getText() == null || textFieldPhone.getText().trim().equals("")) {
-			exception.addError("phone", "Field can't be empty");
+			exception.addError("phone", "deixe vazio não");
 		}
 		obj.setPhone(textFieldPhone.getText());
 		
 		//baseSalary
 		if(textFieldAddress.getText() == null || textFieldAddress.getText().trim().equals("")) {
-			exception.addError("address", "Field can't be empty");
+			exception.addError("address", "deixe vazio não");
 		}
 		obj.setAddress(textFieldAddress.getText());
 		
@@ -172,8 +172,8 @@ public class ClientFormController implements Initializable {
 	private void initializeNodes() {
 		Constraints.setTextFieldInteger(textFieldId);
 		Constraints.setTextFieldMaxLength(textFieldName, 60);
-		Constraints.setTextFieldMaxLength(textFieldCpf, 11);
-		Constraints.setTextFieldMaxLength(textFieldPhone, 11);
+		Constraints.setTextFieldMaxLength(textFieldCpf, 14);
+		Constraints.setTextFieldMaxLength(textFieldPhone, 15);
 		Constraints.setTextFieldMaxLength(textFieldAddress, 60);
 		
 		

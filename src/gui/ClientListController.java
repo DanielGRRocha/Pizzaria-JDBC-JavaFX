@@ -268,15 +268,16 @@ public class ClientListController implements Initializable, InterDataChangeListe
 			doc.open();
 			List<Client> items = tableViewClient.getItems();
 			
+			doc.add(new Paragraph("Pizzaria do Michelangelo - Lista de Clientes\n\n"));
 			for (Client client : items) {
-				doc.add(new Paragraph("Pizzaria do Michelangelo - Lista de Clientes"));
+				
 				doc.add(new Paragraph(""));
 				doc.add(new Paragraph("Id: "+client.getId()));
 				doc.add(new Paragraph("Nome: "+client.getName()));
 				doc.add(new Paragraph("CPF: "+client.getCpf()));
 				doc.add(new Paragraph("Telefone: "+client.getPhone()));
 				doc.add(new Paragraph("Endereço: "+client.getAddress()));
-				doc.add(new Paragraph(""));
+				doc.add(new Paragraph("\n"));
 			}
 			
 			doc.close();

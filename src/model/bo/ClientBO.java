@@ -3,12 +3,12 @@ package model.bo;
 import java.util.List;
 
 import model.dao.FactoryDAO;
-import model.dao.InterDAO;
+import model.dao.InterClientDAO;
 import model.vo.Client;
 
-public class ClientBO implements InterBO<Client> {
+public class ClientBO implements InterClientBO<Client> {
 	
-	private InterDAO<Client> dao = FactoryDAO.createClienteDAO();
+	private InterClientDAO<Client> dao = FactoryDAO.createClienteDAO();
 	
 	@Override
 	public void saveOrUpdate(Client obj) {
@@ -29,6 +29,13 @@ public class ClientBO implements InterBO<Client> {
 	public List<Client> findAll() {
 		return dao.findAll();
 	}
+
+	@Override
+	public List<Client> findAllNewClient() {
+		return dao.findAllNewClient();
+	}
+	
+	
 
 
 }

@@ -1,6 +1,7 @@
 package model.vo;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.Objects;
 //tb_client
 public class Client implements Serializable{
@@ -12,8 +13,7 @@ public class Client implements Serializable{
 	private String phone;
 	private String address;
 	
-	//OneToMany
-//	private List<Order> orders = new ArrayList<>();
+	private Date date;
 	
 	public Client() {
 	}
@@ -65,10 +65,15 @@ public class Client implements Serializable{
 	public void setAddress(String address) {
 		this.address = address;
 	}
-
-//	public List<Order> getOrders() {
-//		return orders;
-//	}
+	
+	public Date getDate() {
+		return date;
+	}
+	
+	public void setDate(Date date) {
+		this.date = date;
+	}
+	
 
 	@Override
 	public int hashCode() {

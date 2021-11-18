@@ -110,21 +110,6 @@ public class ClientDAO extends BaseDAO implements InterClientDAO<Client> {
 		}
 	}
 
-//	@Override
-//	public ResultSet findAll() {
-//		String SQL = "select * from tb_client";
-//		Statement st;
-//		ResultSet rs = null;
-//				
-// 		try {
-//			st = getConnection().createStatement();
-//			rs = st.executeQuery(SQL);
-//		} catch (SQLException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		return rs;
-//	}
 
 	@Override
 	public ResultSet findByName(Client obj) {
@@ -163,7 +148,7 @@ public class ClientDAO extends BaseDAO implements InterClientDAO<Client> {
 	@Override
 	public List<Client> findAll() {
 		
-		String SQL = "SELECT * FROM tb_client";
+		String SQL = "SELECT * FROM tb_client ORDER BY name";
 
 		PreparedStatement pst = null;
 		ResultSet rs = null;
@@ -193,4 +178,35 @@ public class ClientDAO extends BaseDAO implements InterClientDAO<Client> {
 			DB.closeResultSet(rs);
 		}
 	}
+
+	@Override
+	public List<Client> findAllNewClient() {
+		String SQL = "SELECT * FROM tb_new_client";
+
+		PreparedStatement pst = null;
+		ResultSet rs = null;
+		try {
+			pst = getConnection().prepareStatement(SQL);
+
+			rs = pst.executeQuery();
+
+			List<Client> list = new ArrayList<>();
+
+			while (rs.next()) {
+				Client obj = new Client();
+				obj.setId(rs.getInt("id"));
+				obj.setName(rs.getString("name"));
+				obj.setDate(new java.util.Date(rs.getTimestamp("date").getTime()));
+
+				list.add(obj);
+			}
+			return list;
+		} catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		} finally {
+			DB.closeStatement(pst);
+			DB.closeResultSet(rs);
+		}
+	}
+	
 }

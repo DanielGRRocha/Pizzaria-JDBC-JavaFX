@@ -41,6 +41,12 @@ public class MainViewController implements Initializable {
 	private MenuItem menuItemOrder;
 	
 	@FXML
+	private MenuItem menuItemNewClient;
+	
+	@FXML
+	private MenuItem menuItemLogin;
+	
+	@FXML
 	private MenuItem menuItemAbout;
 	
 	
@@ -85,6 +91,20 @@ public class MainViewController implements Initializable {
 	}
 	
 	@FXML
+	public void onMenuItemNewClientAction() {
+		loadView("/gui/NewClientList.fxml", (NewClientListController controller) -> {
+			controller.setClientBO(new ClientBO());
+			controller.updateTableView();
+		});
+	}
+	
+	@FXML
+	public void onMenuItemLoginAction() throws IOException {
+		loadView("/gui/LoginScreen.fxml", (LoginController controller) -> {
+		});
+	}
+	
+	@FXML
 	public void onMenuItemAboutAction() {
 		loadView("/gui/Login.fxml", x -> {});
 	}
@@ -116,7 +136,6 @@ public class MainViewController implements Initializable {
 			Alerts.showAlert("IO Exception", "Error loading view", e.getMessage(), AlertType.ERROR);
 		}
 	}
-	
 	
 
 }//class

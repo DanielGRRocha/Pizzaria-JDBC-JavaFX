@@ -1,5 +1,7 @@
 package gui;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -7,6 +9,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
+
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfWriter;
 
 import application.Main;
 import db.DbIntegrityException;
@@ -55,7 +62,9 @@ public class OrderListController implements Initializable, InterDataChangeListen
 
 	
 	private OrderBO service;
-
+	
+	@FXML
+	private Button btGerarPDF;
 	
 	@FXML
 	private Label label;
@@ -106,6 +115,11 @@ public class OrderListController implements Initializable, InterDataChangeListen
 		Stage parentStage = Utils.currentStage(event);
 		Order obj = new Order();
 		createDialogForm(obj,"/gui/OrderForm.fxml", parentStage);
+	}
+	
+	@FXML
+	public void onBtGerarPDF(ActionEvent event) {
+		generatePdf();
 	}
 
 	
@@ -311,6 +325,45 @@ public class OrderListController implements Initializable, InterDataChangeListen
 
 		// 5. Add sorted (and filtered) data to the table.
 		tableViewOrder.setItems(sortedData);
+	}
+	
+	private void generatePdf() {
+		Document doc = new Document();
+		try {
+			PdfWriter.getInstance(doc, new FileOutputStream("C:\\Users\\Public\\Pedidos.pdf"));
+			doc.open();
+			List<Order> items = tableViewOrder.getItems();
+			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+			
+			doc.add(new Paragraph("Pizzaria do Michelangelo - Lista de Pedidos\n\n"));
+			
+			double sum = 0.0;
+			for (Order order : items) {
+				
+				
+				doc.add(new Paragraph(""));
+				doc.add(new Paragraph("Data: "+sdf.format(order.getMoment()) + " Status: " + order.getOrderStatus().getName()));
+				doc.add(new Paragraph("Id: "+order.getId()));
+				doc.add(new Paragraph("Nome: "+order.getClient().getName()));
+				doc.add(new Paragraph("Sabor: "+order.getPizza().getName()));
+				doc.add(new Paragraph("Tamanho: "+order.getPizzaSize().getName()));
+				doc.add(new Paragraph("Adicional: "+order.getAdditional().getName()));
+				doc.add(new Paragraph(String.format("Total: R$ %.2f", order.getTotal())));
+				doc.add(new Paragraph("\n"));
+				sum += order.getTotal();
+			}
+			
+			doc.add(new Paragraph(String.format("\nSoma de todos os pedidos: R$ %.2f", sum)));
+			
+			doc.close();
+			Alerts.showAlert("Opa", null, "PDF criado, meu bom!", AlertType.INFORMATION);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (DocumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 

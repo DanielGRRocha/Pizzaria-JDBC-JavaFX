@@ -226,7 +226,7 @@ public class OrderFormController implements Initializable {
 		
 		//Moment
 		if(dpMoment.getValue() == null) {
-			exception.addError("moment", "Field can't be empty");
+			exception.addError("moment", "deixe vazio não");
 		}
 		else {
 			Instant instant = Instant.from(dpMoment.getValue().atStartOfDay(ZoneId.systemDefault()));
@@ -235,7 +235,7 @@ public class OrderFormController implements Initializable {
 		
 		//price
 		if (textFieldTotal.getText() == null || textFieldTotal.getText().trim().equals("")) {
-			exception.addError("total", "Field can't be empty");
+			exception.addError("total", "deixe vazio não");
 		}
 		obj.setTotal(Utils.tryParseToDouble(textFieldTotal.getText()));
 		

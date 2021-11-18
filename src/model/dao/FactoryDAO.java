@@ -17,7 +17,7 @@ import model.vo.PizzaSize;
 
 public class FactoryDAO {
 	
-	public static InterDAO<Client> createClienteDAO() {
+	public static InterClientDAO<Client> createClienteDAO() {
 		return new ClientDAO();
 	}
 	

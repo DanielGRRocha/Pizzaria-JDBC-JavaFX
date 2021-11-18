@@ -156,23 +156,25 @@ public class OrderDAO extends BaseDAO implements InterOrderDAO<Order> {
 
 	@Override
 	public List<Order> findAll() {
-		String SQL = "SELECT tb_order.*,"
-				+ " tb_client.Name as ClientName,"
-				+ " tb_pizza.Name as PizzaName,"
-				+ " tb_pizza_size.Name as SizeName,"
-				+ " tb_additional.Name as AdditionalName,"
-				+ " tb_order_status.Name as StatusName"
-				+ " FROM tb_order"
-				+ " INNER JOIN tb_client ON (tb_order.client_id = tb_client.Id)"
-				+ " INNER JOIN tb_pizza ON (tb_order.pizza_id = tb_pizza.Id)"
-				+ " INNER JOIN  tb_pizza_size ON (tb_order.pizza_size_id = tb_pizza_size.Id)"
-				+ " INNER JOIN tb_additional ON (tb_order.additional_id = tb_additional.Id)"
-				+ " INNER JOIN tb_order_status ON (tb_order.order_status_id = tb_order_status.Id) ORDER BY id asc";
+//		String SQL = "SELECT tb_order.*,"
+//				+ " tb_client.Name as ClientName,"
+//				+ " tb_pizza.Name as PizzaName,"
+//				+ " tb_pizza_size.Name as SizeName,"
+//				+ " tb_additional.Name as AdditionalName,"
+//				+ " tb_order_status.Name as StatusName"
+//				+ " FROM tb_order"
+//				+ " INNER JOIN tb_client ON (tb_order.client_id = tb_client.Id)"
+//				+ " INNER JOIN tb_pizza ON (tb_order.pizza_id = tb_pizza.Id)"
+//				+ " INNER JOIN  tb_pizza_size ON (tb_order.pizza_size_id = tb_pizza_size.Id)"
+//				+ " INNER JOIN tb_additional ON (tb_order.additional_id = tb_additional.Id)"
+//				+ " INNER JOIN tb_order_status ON (tb_order.order_status_id = tb_order_status.Id) ORDER BY id asc";
+		
+		String newSQL = "SELECT * FROM public.view_order";
 
 		PreparedStatement pst = null;
 		ResultSet rs = null;
 		try {
-			pst = getConnection().prepareStatement(SQL);
+			pst = getConnection().prepareStatement(newSQL);
 
 			rs = pst.executeQuery();
 
